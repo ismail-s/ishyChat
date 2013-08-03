@@ -26,6 +26,7 @@
 from Crypto import Random
 from Crypto.Cipher import AES
 
+
 class Encryptor(object):
     def __init__(self, key):
         self.key = key
@@ -37,10 +38,15 @@ class Encryptor(object):
     def encrypt(self, text):
         iv = Random.new().read(AES.block_size)
         cipher = self._new(iv)
-        text_to_encrypt = text[:]
-        while len(text_to_encrypt) % 16 or len(text_to_encrypt) < 16:
-            text_to_encrypt += '#'
-        return iv+cipher.encrypt(text_to_encrypt)
+        plaintext = text[:]
+        plaintext = self._padWithHashes(plaintext)
+        return iv + cipher.encrypt(plaintext)
+
+    def encrypt_ECB(self, text):
+        cipher = AES.new(self.key, AES.MODE_ECB)
+        plaintext = text[:]
+        plaintext = self._padWithHashes(plaintext)
+        return cipher.encrypt(plaintext)
 
     def decrypt(self, text):
         #text_start = text.find(' ') + 1
@@ -51,14 +57,14 @@ class Encryptor(object):
         #while plaintext[-1] == '#':
             #plaintext = plaintext[:-1]
         #return name + plaintext
-        
+
         name_start = text.find('<') + 1
         name_end = text.find('>')
-        name = self._decrypt(text[name_start: name_end])
-        msg_start = name_end + 2  #msgs look like '<name> msg here'
+        name = self._decrypt_ECB(text[name_start: name_end])
+        msg_start = name_end + 2  # msgs look like '<name> msg here'
         msg = self._decrypt(text[msg_start:])
         return '<' + name + '> ' + msg
-    
+
     def _decrypt(self, text):
         iv = text[:AES.block_size]
         cipher = self._new(iv)
@@ -66,7 +72,23 @@ class Encryptor(object):
         while plaintext[-1] == '#':
             plaintext = plaintext[:-1]
         return plaintext
-    
+
+    def _decrypt_ECB(self, text):
+        cipher = AES.new(self.key, AES.MODE_ECB)
+        plaintext = cipher.decrypt(text)
+        while plaintext[-1] == '#':
+            plaintext = plaintext[:-1]
+        return plaintext
+
+    def _padWithHashes(self, text):
+        text_copy = text[:]
+        while len(text_copy) % AES.block_size or len(text_copy) < AES.block_size:
+            text_copy += '#'
+        return text_copy
+
+    def _removeHashes(self, text):
+        pass
+
     def _new(self, iv):
         return AES.new(self.key, AES.MODE_CBC, iv)
 

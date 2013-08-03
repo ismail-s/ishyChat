@@ -22,10 +22,24 @@
 #
 #  Also, this software should only be used for good and not evil.
 #
+"""
+This is the main client file for isyChat. It contains code for making
+The application and setting up and managing the connection to the
+server.
+Run this file to run ishyChat client.
+"""
+
+########################
+###Imports##############
+########################
+
+#This is for timing pings.
+import time
 
 #Tkinter related imports
 import Tkinter as tk
 import ScrolledText
+import ttk
 
 #Twisted imports. Twisted is used to connect to the server
 #and send and receive messages.
@@ -36,24 +50,34 @@ from twisted.protocols.basic import LineReceiver
 #This module allows us to not show the key when it is entered.
 import getpass
 
+##The last 2 imports are local files.
+
 #import the encryption/decryption stuff
 import Encryptor
 
-class Application(tk.Frame):
+#These are messages to display to the user
+import Messages
+################
+###End imports##
+################
+
+
+
+class Application(ttk.Frame):
     #Our Tkinter application stuff is held in this.
     def __init__(self, root, factory, key, *args, **kwargs):
-        tk.Frame.__init__(self, root, *args, **kwargs)
+        ttk.Frame.__init__(self, root, *args, **kwargs)
         self.root = root
         self.factory = factory
         self.msgs = []  #We will store all the messages here.
-        self.state = "NOT CONNECTED"  #this is either "NOT CONNECTED" or "CONNECTED"
+        self.state = "NOT CONNECTED"  #this is either "NOT CONNECTED" or "CONNECTED or GET NAME"
 
         #Set up the encryption
         self.encryptor = Encryptor.Encryptor(key)
 
         #Set up widgets
-        self.textboxSetUp()
-        self.entryboxSetUp()
+        self._textboxSetUp()
+        self._entryboxSetUp()
 
         #Pack widgets
         self.textbox.pack(fill = tk.BOTH, expand = 1)
@@ -62,60 +86,81 @@ class Application(tk.Frame):
         #Pack the frame
         self.pack(fill = tk.BOTH, expand = 1)
 
-    def textboxSetUp(self):
+    def _textboxSetUp(self):
         self.textbox = ScrolledText.ScrolledText(self, wrap = tk.WORD, width = 50, height = 20)
 
-    def entryboxSetUp(self):
-        self.entrybox = tk.Entry(self, width = 50)
+    def _entryboxSetUp(self):
+        self.entrybox = ttk.Entry(self, width = 50)
         self.entrybox.bind("<Return>", self.sendStringFromEntrybox)
 
     def sendStringFromEntrybox(self, event):
+        """Gets whatever is in the entrybox and works out what to do
+        
+        with it. This may be sending it, or running some other function.
+        """
         string_to_send = self.entrybox.get()
         if not string_to_send:  #don't want to be sending nothing!
             return
         self.entrybox.delete(0, tk.END)  #Erase entrybox
-        if self.command_parser(string_to_send):
+        if self._command_parser(string_to_send):
             return
         self._scrollToBottom()  #Scroll textbox to the bottom
         if self.state == "NOT CONNECTED":
             return
-        string_to_send = self.encryptor.encrypt(string_to_send)
+        if self.state == "GET NAME":
+            string_to_send = self.encryptor.encrypt_ECB(string_to_send)
+        elif self.state == "CONNECTED":
+            string_to_send = self.encryptor.encrypt(string_to_send)
         self.factory.line.sendLine(string_to_send)
 
-    def command_parser(self, string):
+    def _command_parser(self, string):
+        """This function is only called by sendStringFromMessageBox.
+        
+        It checks for any commands in string, and executes them."""
         if not string.startswith('/'):
             return False
         string_to_check = string[1:]  #get rid of the / at the start of the string.
-        if string_to_check == 'q':    #'/q' is one way of exiting.
-            reactor.stop()
+        if string_to_check == 'q' or string_to_check == 'quit':
+            reactor.stop()  #This line ends the program (but on some systems it crashes it, which is a bit bizarre...)
         elif string_to_check == 'test':  #just a test string.
-            self.addString('/clientTesting...')
+            self.addString(Messages.test_message)
             return True
-        elif string_to_check == 'help':
-            self.command_help()
+        elif string_to_check == 'help' or string_to_check == 'h':
+            self.addString(Messages.help_message)
             return True
-        elif string_to_check == str(int(string_to_check)):  #see docstring of history_printer below.
-            self.command_history_printer(int(string_to_check))
+        elif string_to_check == 'warning':
+            self.addString(Messages.warning_message)
+            return True
+        elif string_to_check == 'ping':
+            self.factory.line.sendLine(string)
+            self.ping_start = time.clock()
+            return True
+        elif string_to_check.isdigit():  #see docstring of history_printer below.
+            self._command_history_printer(int(string_to_check))
             return True
         #insert more options here
         return False
 
-    def command_history_printer(self, index):
+    def _command_history_printer(self, index):
         """Prints out one of the last messages received in the entrybox.
-e.g. if index is 1, then the last message received is printed.
-if index is 2, the second-to-last message received is printed.
-"""
+        
+        e.g. if index is 1, then the last message received is printed.
+        if index is 2, the second-to-last message received is printed.
+        """
         msgs_length = len(self.msgs)
         if index > msgs_length or index < 1:
             return
         msg_location = -index
         msg_to_print = self.msgs[msg_location]
         self.entrybox.insert(0, msg_to_print)
-    
-    def command_help(self):
-        """Prints a help string in the textbox."""
 
     def addString(self, string):
+        """Adds string to the textbox.
+        
+        If required, string is also decrypted.
+        If string starts with /serv or /client, then no decryption is
+        attempted. If decryption is attempted and string is not
+        encrypted, then errors will be thrown up."""
         #This is a string used by the server
         #when it sends its own messages to clients.
         SERVER_STRING = "/serv"
@@ -127,6 +172,14 @@ if index is 2, the second-to-last message received is printed.
             return
         if string.startswith(SERVER_STRING):
             decrypted_string = string[len(SERVER_STRING):]
+            if '/name' in string:
+                self.state = "GET NAME"
+                decrypted_string = decrypted_string[len('/name'):]
+            elif '/gotname' in string:
+                self.state = "CONNECTED"
+                decrypted_string = decrypted_string[len('/gotname'):]
+            elif '/pong' in string:
+                decrypted_string = 'ping time: ' + str(time.clock() - self.ping_start)
         elif string.startswith(CLIENT_STRING):
             decrypted_string = string[len(CLIENT_STRING):]
         else:
@@ -134,7 +187,7 @@ if index is 2, the second-to-last message received is printed.
             decrypted_string = self.encryptor.decrypt(string)
             self.msgs.append(decrypted_string[decrypted_string.find('>') + 2:])
         string_to_add = decrypted_string + '\n'
-        self.textbox.insert(tk.END, string_to_add)
+        self.textbox.insert(tk.END, string_to_add) # This will be the entry point for implementing bold/colour text highlighting.
         self._scrollToBottom()
 
     def _scrollToBottom(self):
@@ -144,15 +197,7 @@ if index is 2, the second-to-last message received is printed.
 
 class clientConnection(LineReceiver):
     def connectionMade(self):
-        start_message = """/clientConnection established.
-Please note that I have no way of knowing if you typed the key correctly. If it was typed incorrectly, then you will quite soon see some mumbo-jumbo text on-screen instead of messages from other users.
-All messages are encrypted using the key you entered at the beginning. This key should have been the same one everyone else is using, otherwise the chat won't work. The key should have been ideally 32 characters long to make it more secure.
-Also note that the server only receives an encrypted version of the client's names.
-The server will now speak to you, so please follow its instructions.
-
-
-"""
-        self.factory.app.addString(start_message)
+        self.factory.app.addString(Messages.start_message)
         self.factory.app.state = "CONNECTED"
 
     def lineReceived(self, line):
@@ -170,7 +215,7 @@ class Factory(ReconnectingClientFactory):
         tksupport.install(self.root)
 
     def startedConnecting(self, connector):
-        self.app.addString("/clientStarted to connect.")
+        self.app.addString(Messages.starting_conn)
         self.resetDelay()
 
     def buildProtocol(self, address):
@@ -179,12 +224,12 @@ class Factory(ReconnectingClientFactory):
         return self.line
 
     def clientConnectionLost(self, connector, reason):
-        self.app.addString("/clientConnection lost. Attempting to re-establish connection.")
+        self.app.addString(Messages.conn_lost)
         self.app.state = "NOT CONNECTED"
         ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
-        self.app.addString("/clientConnection failed. Attempting to re-establish connection.")
+        self.app.addString(Messages.conn_failed)
         self.app.state = "NOT CONNECTED"
         ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 

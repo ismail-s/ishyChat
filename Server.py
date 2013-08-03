@@ -33,7 +33,7 @@ class PubProtocol(basic.LineReceiver):
     def connectionMade(self):
         self.sendLine("/servWelcome to ishyChat!")
         self.sendLine("/serv{} other people present.".format(len(self.clients)))
-        self.sendLine("/servWhat's your name?")
+        self.sendLine("/serv/nameWhat's your name?")
 
     def connectionLost(self, reason):
         if self.name in self.clients.keys():
@@ -44,6 +44,9 @@ class PubProtocol(basic.LineReceiver):
         print self.name, "has left.", len(self.clients), "clients connected."
 
     def lineReceived(self, line):
+        if line == '/ping':
+            self.sendLine('/serv/pong')
+            return
         if self.state == "GETNAME":
             self.handle_GETNAME(line)
         elif self.state == "CHAT":
@@ -55,7 +58,7 @@ class PubProtocol(basic.LineReceiver):
         if name in self.clients.keys():
             self.sendLine("/servName taken. Please choose another name")
             return
-        self.sendLine("/servHiya {}, or at least, that's what I think you're called!".format(name))
+        self.sendLine("/serv/gotnameHiya {}, or at least, that's what I think you're called!".format(name))
         self.name = name
         self.clients[name] = self
         print name, "has been added.", len(self.clients), "clients connected."
