@@ -85,8 +85,6 @@ class Encryptor(object):
         #while len(text_copy) % AES.block_size or len(text_copy) < AES.block_size:
             #text_copy += '#'
         text_len = len(text_copy)
-        if text_len < AES.block_size:
-            text_copy = text_copy.ljust(AES.block_size, '\0')
         if text_len % AES.block_size:
             text_copy = text_copy.ljust(AES.block_size * ((text_len / AES.block_size) + 1), '\0')
         return text_copy
