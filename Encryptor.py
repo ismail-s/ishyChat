@@ -39,13 +39,13 @@ class Encryptor(object):
         iv = Random.new().read(AES.block_size)
         cipher = self._new(iv)
         plaintext = text[:]
-        plaintext = self._padWithHashes(plaintext)
+        plaintext = self._padMessage(plaintext)
         return iv + cipher.encrypt(plaintext)
 
     def encrypt_ECB(self, text):
         cipher = AES.new(self.key, AES.MODE_ECB)
         plaintext = text[:]
-        plaintext = self._padWithHashes(plaintext)
+        plaintext = self._padMessage(plaintext)
         return cipher.encrypt(plaintext)
 
     def decrypt(self, text):
@@ -69,21 +69,26 @@ class Encryptor(object):
         iv = text[:AES.block_size]
         cipher = self._new(iv)
         plaintext = cipher.decrypt(text[AES.block_size:])
-        while plaintext[-1] == '#':
-            plaintext = plaintext[:-1]
+        #while plaintext[-1] == '#':
+            #plaintext = plaintext[:-1]
         return plaintext
 
     def _decrypt_ECB(self, text):
         cipher = AES.new(self.key, AES.MODE_ECB)
         plaintext = cipher.decrypt(text)
-        while plaintext[-1] == '#':
-            plaintext = plaintext[:-1]
+        #while plaintext[-1] == '#':
+            #plaintext = plaintext[:-1]
         return plaintext
 
-    def _padWithHashes(self, text):
+    def _padMessage(self, text):
         text_copy = text[:]
-        while len(text_copy) % AES.block_size or len(text_copy) < AES.block_size:
-            text_copy += '#'
+        #while len(text_copy) % AES.block_size or len(text_copy) < AES.block_size:
+            #text_copy += '#'
+        text_len = len(text_copy)
+        if text_len < AES.block_size:
+            text_copy = text_copy.ljust(AES.block_size, '\0')
+        if text_len % AES.block_size:
+            text_copy = text_copy.ljust(AES.block_size * ((text_len / AES.block_size) + 1), '\0')
         return text_copy
 
     def _removeHashes(self, text):
