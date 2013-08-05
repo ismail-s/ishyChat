@@ -89,9 +89,6 @@ class Encryptor(object):
             text_copy = text_copy.ljust(AES.block_size * ((text_len / AES.block_size) + 1), '\0')
         return text_copy
 
-    def _removeHashes(self, text):
-        pass
-
     def _new(self, iv):
         return AES.new(self.key, AES.MODE_CBC, iv)
 
