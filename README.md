@@ -10,7 +10,6 @@ A very basic chat client/server implementation written in Python and using Twist
 ##TODO
 * Fix glitches and whatnot.
 * Add command-line options.
-* Sort out name conflicts.
 * Add bold and colour text to make things look nicer.
 * Add hyperlink support (using the webbrowser module).
 Feel free to do any of these for me.
