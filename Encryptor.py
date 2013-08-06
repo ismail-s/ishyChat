@@ -59,11 +59,14 @@ class Encryptor(object):
         #return name + plaintext
 
         name_start = text.find('<') + 1
-        name_end = text.find('>')
+        name_end = text.find('> ', name_start)
         name = self._decrypt_ECB(text[name_start: name_end])
         msg_start = name_end + 2  # msgs look like '<name> msg here'
         msg = self._decrypt(text[msg_start:])
-        return '<' + name + '> ' + msg
+        # We get rid of NULL characters as they mess things up when
+        # strings are added in tkinter where the NULL character
+        # is seen as a terminator.
+        return ('<' + name + '> ' + msg).replace('\0', '') 
 
     def _decrypt(self, text):
         iv = text[:AES.block_size]

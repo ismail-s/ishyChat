@@ -201,8 +201,10 @@ class Frame(ttk.Frame):
         else:
             print string
             decrypted_string = self.encryptor.decrypt(string)
-            self.msgs.append(decrypted_string[decrypted_string.find('>') + 2:])
+            self.msgs.append(decrypted_string[decrypted_string.find('> ') + 2:])
+            print decrypted_string
         string_to_add = decrypted_string + '\n'
+        print string_to_add
         self.textbox.insert(tk.END, string_to_add) # This will be the entry point for implementing bold/colour text highlighting.
         self._scrollToBottom()
 
