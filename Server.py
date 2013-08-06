@@ -24,6 +24,13 @@
 from twisted.internet import reactor, protocol
 from twisted.protocols import basic
 
+import base64, json
+class gb:
+    standard_dict = {'message': None, 'name': 'server', 'metadata': []}
+    pong_dict = dict(standard_dict)
+    pong_dict['metadata'] = ['pong']
+
+
 class PubProtocol(basic.LineReceiver):
     def __init__(self, factory):
         self.clients = factory
@@ -31,24 +38,28 @@ class PubProtocol(basic.LineReceiver):
         self.state = "GETNAME"
 
     def connectionMade(self):
-        self.sendLine("/servWelcome to ishyChat!")
-        self.sendLine("/serv{} other people present.".format(len(self.clients)))
-        self.sendLine("/serv/nameWhat's your name?")
+        msg_to_send = "Welcome to ishyChat!\n{} other people present.\nWhat's your name?".format(len(self.clients))
+        dict_to_send = dict(gb.standard_dict)
+        dict_to_send['message'] = msg_to_send
+        dict_to_send['metadata'] = ['getname']
+        self.sendLine(base64.b64encode(json.dumps(dict_to_send)))
 
     def connectionLost(self, reason):
         if self.name in self.clients.keys():
             del self.clients[self.name]
-        line = "/serv{} has left. {} people/person still here.".format(self.name, len(self.clients))
+        line = "{} has left. {} people/person still here.".format(self.name, len(self.clients))
+        dict_to_send = dict(gb.standard_dict)
+        dict_to_send['message'] = line
         for name, client in self.clients.iteritems():
-            client.sendLine(line)
+            client.sendLine(base64.b64encode(json.dumps(dict_to_send)))
         print self.name, "has left.", len(self.clients), "clients connected."
 
     def lineReceived(self, line):
-        if line == '/ping':
-            self.sendLine('/serv/pong')
+        if 'ping' in json.loads(base64.b64decode(line))['metadata']:
+            self.sendLine(base64.b64encode(json.dumps(gb.pong_dict)))
             return
         if self.state == "GETNAME":
-            self.handle_GETNAME(line)
+            self.handle_GETNAME(json.loads(base64.b64decode(line))['name'])
         elif self.state == "CHAT":
             self.handle_CHAT(line)
         else:
@@ -56,18 +67,23 @@ class PubProtocol(basic.LineReceiver):
 
     def handle_GETNAME(self, name):
         if name in self.clients.keys():
-            self.sendLine("/servName taken. Please choose another name")
+            dict_to_send = dict(gb.standard_dict)
+            dict_to_send['message'] = "Name taken. Please choose another name"
+            self.sendLine(base64.b64encode(json.dumps(dict_to_send)))
             return
-        self.sendLine("/serv/gotnameHiya {}, or at least, that's what I think you're called!".format(name))
+        dict_to_send = dict(gb.standard_dict)
+        dict_to_send['message'] = "Hiya {}, or at least, that's what I think you're called!".format(name)
+        dict_to_send['metadata'] = ['gotname']
+        self.sendLine(base64.b64encode(json.dumps(dict_to_send)))
         self.name = name
         self.clients[name] = self
         print name, "has been added.", len(self.clients), "clients connected."
         self.state = "CHAT"
 
     def handle_CHAT(self,line):
-        msg = "<{}> {}".format(self.name, line)
+        #msg = "<{}> {}".format(self.name, line)
         for name, client in self.clients.iteritems():
-            client.sendLine(msg)
+            client.sendLine(line)
 
 class PubFactory(protocol.Factory):
     def __init__(self):
@@ -82,7 +98,6 @@ class PubFactory(protocol.Factory):
 def main():
     reactor.listenTCP(1025, PubFactory())
     reactor.run()
-    return 0
 
 if __name__ == '__main__':
 	main()

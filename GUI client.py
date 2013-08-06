@@ -27,7 +27,6 @@ This is the main client file for isyChat. It contains code for making
 The application and setting up and managing the connection to the
 server.
 Run this file to run ishyChat client.
-NOTE: This file has not been tested yet.
 """
 
 ########################
@@ -51,6 +50,7 @@ from twisted.protocols.basic import LineReceiver
 #This module allows us to not show the key when it is entered.
 import getpass
 
+import base64, json
 ##The last 2 imports are local files.
 
 #import the encryption/decryption stuff
@@ -124,9 +124,19 @@ class Frame(ttk.Frame):
         if self.state == "NOT CONNECTED":
             return
         if self.state == "GET NAME":
-            string_to_send = self.encryptor.encrypt_ECB(string_to_send)
+            self.name = string_to_send
+            self.name_enc = self.encryptor.encrypt_ECB(string_to_send)
+            dict_to_send = {}
+            dict_to_send['name'] = self.name_enc
+            dict_to_send['message'] = None
+            dict_to_send['metadata'] = ['name']
         elif self.state == "CONNECTED":
-            string_to_send = self.encryptor.encrypt(string_to_send)
+            dict_to_send = {}
+            dict_to_send['name'] = self.name_enc
+            dict_to_send['metadata'] = []
+            dict_to_send['iv'], dict_to_send['message'] = self.encryptor.encrypt(string_to_send)
+        print dict_to_send
+        string_to_send = base64.b64encode(json.dumps(dict_to_send))
         self.factory.line.sendLine(string_to_send)
 
     def _command_parser(self, string):
@@ -148,7 +158,7 @@ class Frame(ttk.Frame):
             self.addString(Messages.warning_message)
             return True
         elif string_to_check == 'ping':
-            self.factory.line.sendLine(string)
+            self.factory.line.sendLine(Messages.ping_message)
             self.ping_start = time.clock()
             return True
         elif string_to_check.isdigit():  #see docstring of history_printer below.
@@ -171,40 +181,30 @@ class Frame(ttk.Frame):
         self.entrybox.insert(0, msg_to_print)
 
     def addString(self, string):
-        """Adds string to the textbox.
+        """Adds string to the textbox. This docstring is outdated.
 
         If required, string is also decrypted.
         If string starts with /serv or /client, then no decryption is
         attempted. If decryption is attempted and string is not
         encrypted, then errors will be thrown up."""
-        #This is a string used by the server
-        #when it sends its own messages to clients.
-        SERVER_STRING = "/serv"
-
-        #This is a string used to identify internal messages
-        CLIENT_STRING = "/client"
-
         if not string:
             return
-        if string.startswith(SERVER_STRING):
-            decrypted_string = string[len(SERVER_STRING):]
-            if '/name' in string:
+        dict_object = json.loads(base64.b64decode(string))
+        if 'server' == dict_object['name']:
+            string_to_add = dict_object['message']
+            if 'getname' in dict_object['metadata']:
                 self.state = "GET NAME"
-                decrypted_string = decrypted_string[len('/name'):]
-            elif '/gotname' in string:
+            elif 'gotname' in dict_object['metadata']:
                 self.state = "CONNECTED"
-                decrypted_string = decrypted_string[len('/gotname'):]
-            elif '/pong' in string:
-                decrypted_string = 'ping time: ' + str(time.clock() - self.ping_start)
-        elif string.startswith(CLIENT_STRING):
-            decrypted_string = string[len(CLIENT_STRING):]
+            elif 'pong' in dict_object['metadata']:
+                string_to_add = 'ping time: ' + str(time.clock() - self.ping_start)
+        elif 'client' == dict_object['name']:
+            string_to_add = dict_object['message']
         else:
-            print string
-            decrypted_string = self.encryptor.decrypt(string)
-            self.msgs.append(decrypted_string[decrypted_string.find('> ') + 2:])
-            print decrypted_string
-        string_to_add = decrypted_string + '\n'
-        print string_to_add
+            msg_to_add = self.encryptor.decrypt(dict_object['iv'], dict_object['message'])
+            self.msgs.append(msg_to_add)
+            string_to_add = '<{}> {}'.format(self.encryptor.decrypt_ECB(dict_object['name']), msg_to_add)
+        string_to_add = string_to_add + '\n'
         self.textbox.insert(tk.END, string_to_add) # This will be the entry point for implementing bold/colour text highlighting.
         self._scrollToBottom()
 
