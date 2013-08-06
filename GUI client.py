@@ -27,6 +27,7 @@ This is the main client file for isyChat. It contains code for making
 The application and setting up and managing the connection to the
 server.
 Run this file to run ishyChat client.
+NOTE: This file has not been tested yet.
 """
 
 ########################
@@ -61,14 +62,32 @@ import Messages
 ###End imports##
 ################
 
+class Application(tk.Tk):
+
+    def __init__(self, address, port, key):
+        tk.Tk.__init__(self)
+        self.protocol('WM_DELETE_WINDOW', reactor.stop)
+        self.wm_title("ishyChat")
+        #Set up application
+        self.frame = Frame(self, key)
+        self.frame.pack(fill = tk.BOTH, expand = 1)
+        tksupport.install(self)
+        #Set up factory
+        self.factory = Factory()
+        #Link the two together
+        self.frame.factory = self.factory
+        self.factory.frame = self.frame
+        #Set up reactor
+        reactor.connectTCP(address, port, self.factory)
+        #Let's get this show on the road!
+        reactor.run()
 
 
-class Application(ttk.Frame):
+class Frame(ttk.Frame):
     #Our Tkinter application stuff is held in this.
-    def __init__(self, root, factory, key, *args, **kwargs):
+    def __init__(self, root, key, *args, **kwargs):
         ttk.Frame.__init__(self, root, *args, **kwargs)
         self.root = root
-        self.factory = factory
         self.msgs = []  #We will store all the messages here.
         self.state = "NOT CONNECTED"  #this is either "NOT CONNECTED" or "CONNECTED or GET NAME"
 
@@ -83,9 +102,6 @@ class Application(ttk.Frame):
         self.textbox.pack(fill = tk.BOTH, expand = 1)
         self.entrybox.pack(fill = tk.X, expand = 1, padx = 3, pady = 3)
 
-        #Pack the frame
-        self.pack(fill = tk.BOTH, expand = 1)
-
     def _textboxSetUp(self):
         self.textbox = ScrolledText.ScrolledText(self, wrap = tk.WORD, width = 50, height = 20)
 
@@ -95,7 +111,7 @@ class Application(ttk.Frame):
 
     def sendStringFromEntrybox(self, event):
         """Gets whatever is in the entrybox and works out what to do
-        
+
         with it. This may be sending it, or running some other function.
         """
         string_to_send = self.entrybox.get()
@@ -115,7 +131,7 @@ class Application(ttk.Frame):
 
     def _command_parser(self, string):
         """This function is only called by sendStringFromMessageBox.
-        
+
         It checks for any commands in string, and executes them."""
         if not string.startswith('/'):
             return False
@@ -143,7 +159,7 @@ class Application(ttk.Frame):
 
     def _command_history_printer(self, index):
         """Prints out one of the last messages received in the entrybox.
-        
+
         e.g. if index is 1, then the last message received is printed.
         if index is 2, the second-to-last message received is printed.
         """
@@ -156,7 +172,7 @@ class Application(ttk.Frame):
 
     def addString(self, string):
         """Adds string to the textbox.
-        
+
         If required, string is also decrypted.
         If string starts with /serv or /client, then no decryption is
         attempted. If decryption is attempted and string is not
@@ -164,10 +180,10 @@ class Application(ttk.Frame):
         #This is a string used by the server
         #when it sends its own messages to clients.
         SERVER_STRING = "/serv"
-        
+
         #This is a string used to identify internal messages
         CLIENT_STRING = "/client"
-        
+
         if not string:
             return
         if string.startswith(SERVER_STRING):
@@ -185,8 +201,10 @@ class Application(ttk.Frame):
         else:
             print string
             decrypted_string = self.encryptor.decrypt(string)
-            self.msgs.append(decrypted_string[decrypted_string.find('>') + 2:])
+            self.msgs.append(decrypted_string[decrypted_string.find('> ') + 2:])
+            print decrypted_string
         string_to_add = decrypted_string + '\n'
+        print string_to_add
         self.textbox.insert(tk.END, string_to_add) # This will be the entry point for implementing bold/colour text highlighting.
         self._scrollToBottom()
 
@@ -197,25 +215,22 @@ class Application(ttk.Frame):
 
 class clientConnection(LineReceiver):
     def connectionMade(self):
-        self.factory.app.addString(Messages.start_message)
-        self.factory.app.state = "CONNECTED"
+        self.factory.frame.addString(Messages.start_message)
+        self.factory.frame.state = "CONNECTED"
 
     def lineReceived(self, line):
-        self.factory.app.addString(line)
+        self.factory.frame.addString(line)
 
 
 class Factory(ReconnectingClientFactory):
-    def __init__(self, key, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         #ReconnectingClientFactory.__init__(self, *args, **kwargs)
         self.maxRetries = 10
-        self.root = tk.Tk()
-        self.root.protocol('WM_DELETE_WINDOW', reactor.stop)
-        self.root.wm_title("ishyChat")
-        self.app = Application(self.root, self, key)
-        tksupport.install(self.root)
+        #self.app = Application(self.root, self, key)
+        #tksupport.install(self.root)
 
     def startedConnecting(self, connector):
-        self.app.addString(Messages.starting_conn)
+        self.frame.addString(Messages.starting_conn)
         self.resetDelay()
 
     def buildProtocol(self, address):
@@ -224,13 +239,13 @@ class Factory(ReconnectingClientFactory):
         return self.line
 
     def clientConnectionLost(self, connector, reason):
-        self.app.addString(Messages.conn_lost)
-        self.app.state = "NOT CONNECTED"
+        self.frame.addString(Messages.conn_lost)
+        self.frame.state = "NOT CONNECTED"
         ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
-        self.app.addString(Messages.conn_failed)
-        self.app.state = "NOT CONNECTED"
+        self.frame.addString(Messages.conn_failed)
+        self.frame.state = "NOT CONNECTED"
         ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
 def getInfo():
@@ -239,10 +254,6 @@ def getInfo():
     key = getpass.getpass("Please enter the key")
     return address, port, key
 
-def main():
-    address, port, key = getInfo()
-    reactor.connectTCP(address, port, Factory(key))
-    reactor.run()
-
 if __name__ == "__main__":
-    main()
+    address, port, key = getInfo()
+    Application(address, port, key)
