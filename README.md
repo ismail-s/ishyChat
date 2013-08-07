@@ -6,11 +6,12 @@ A very basic chat client/server implementation written in Python and using Twist
 * It has a cool name.
 * It is minimalistic.
 * It has some undocumented syntax which allows previous messages to be quickly brought up in the entrybox (read the code to understand this).
+* It uses JSON when sending/receiving messages.
 
 ##TODO
+* Decide on a license.
 * Fix glitches and whatnot.
 * Add command-line options and a gui interface for choosing address, port and key.
-* Switch to JSON.
 * Add bold and colour text to make things look nicer.
 * Add hyperlink support (using the webbrowser module).
 Feel free to do any of these for me.
