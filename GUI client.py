@@ -32,30 +32,24 @@ Run this file to run ishyChat client.
 ########################
 ###Imports##############
 ########################
-
 #This is for timing pings.
 import time
-
+#This module allows us to not show the key when it is entered.
+from getpass import getpass
 #Tkinter related imports
 import Tkinter as tk
 import ScrolledText
 import ttk
-
 #Twisted imports. Twisted is used to connect to the server
 #and send and receive messages.
 from twisted.internet import tksupport, reactor
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.protocols.basic import LineReceiver
-
-#This module allows us to not show the key when it is entered.
-import getpass
-
-import base64, json
 ##The last 2 imports are local files.
-
+#import message packer/unpacker
+import Packer as Pk
 #import the encryption/decryption stuff
 import Encryptor
-
 #These are messages to display to the user
 import Messages
 ################
@@ -88,16 +82,15 @@ class Frame(ttk.Frame):
     def __init__(self, root, key, *args, **kwargs):
         ttk.Frame.__init__(self, root, *args, **kwargs)
         self.root = root
-        self.msgs = []  #We will store all the messages here.
-        self.state = "NOT CONNECTED"  #this is either "NOT CONNECTED" or "CONNECTED or GET NAME"
-
+        #We will store all the messages here.
+        self.msgs = []
+        #this is either "NOT CONNECTED" or "CONNECTED or GET NAME"
+        self.state = "NOT CONNECTED"
         #Set up the encryption
         self.encryptor = Encryptor.Encryptor(key)
-
         #Set up widgets
         self._textboxSetUp()
         self._entryboxSetUp()
-
         #Pack widgets
         self.textbox.pack(fill = tk.BOTH, expand = 1)
         self.entrybox.pack(fill = tk.X, expand = 1, padx = 3, pady = 3)
@@ -115,28 +108,22 @@ class Frame(ttk.Frame):
         with it. This may be sending it, or running some other function.
         """
         string_to_send = self.entrybox.get()
-        if not string_to_send:  #don't want to be sending nothing!
+        if not string_to_send:                   #don't want to be sending nothing!
             return
-        self.entrybox.delete(0, tk.END)  #Erase entrybox
-        if self._command_parser(string_to_send):
+        self.entrybox.delete(0, tk.END)          #Erase entrybox
+        if self._command_parser(string_to_send): #Check if there are any commands to run.
             return
-        self._scrollToBottom()  #Scroll textbox to the bottom
+        self._scrollToBottom()                   #Scroll textbox to the bottom
         if self.state == "NOT CONNECTED":
             return
-        if self.state == "GET NAME":
+        if self.state == "GET NAME":             #Names are encrypted in ECB mode.
             self.name = string_to_send
-            self.name_enc = self.encryptor.encrypt_ECB(string_to_send)
-            dict_to_send = {}
-            dict_to_send['name'] = self.name_enc
-            dict_to_send['message'] = None
-            dict_to_send['metadata'] = ['name']
+            self.name_enc = self.encryptor.encrypt_ECB(self.name)
+            dict_to_send = Pk.makeDict(name=self.name_enc, metadata=['name'])
         elif self.state == "CONNECTED":
-            dict_to_send = {}
-            dict_to_send['name'] = self.name_enc
-            dict_to_send['metadata'] = []
-            dict_to_send['iv'], dict_to_send['message'] = self.encryptor.encrypt(string_to_send)
-        print dict_to_send
-        string_to_send = base64.b64encode(json.dumps(dict_to_send))
+            iv, message = self.encryptor.encrypt(string_to_send)
+            dict_to_send = Pk.makeDict(name=self.name_enc, iv=iv, msg=message)
+        string_to_send = Pk.packUp(dict_to_send)
         self.factory.line.sendLine(string_to_send)
 
     def _command_parser(self, string):
@@ -173,11 +160,9 @@ class Frame(ttk.Frame):
         e.g. if index is 1, then the last message received is printed.
         if index is 2, the second-to-last message received is printed.
         """
-        msgs_length = len(self.msgs)
-        if index > msgs_length or index < 1:
+        if index > len(self.msgs) or index < 1:
             return
-        msg_location = -index
-        msg_to_print = self.msgs[msg_location]
+        msg_to_print = self.msgs[-index]
         self.entrybox.insert(0, msg_to_print)
 
     def addString(self, string):
@@ -189,7 +174,7 @@ class Frame(ttk.Frame):
         encrypted, then errors will be thrown up."""
         if not string:
             return
-        dict_object = json.loads(base64.b64decode(string))
+        dict_object = Pk.packDown(string)
         if 'server' == dict_object['name']:
             string_to_add = dict_object['message']
             if 'getname' in dict_object['metadata']:
@@ -213,7 +198,7 @@ class Frame(ttk.Frame):
         self.textbox.yview(tk.END)
 
 
-class clientConnection(LineReceiver):
+class ClientConnection(LineReceiver):
     def connectionMade(self):
         self.factory.frame.addString(Messages.start_message)
         self.factory.frame.state = "CONNECTED"
@@ -224,17 +209,14 @@ class clientConnection(LineReceiver):
 
 class Factory(ReconnectingClientFactory):
     def __init__(self, *args, **kwargs):
-        #ReconnectingClientFactory.__init__(self, *args, **kwargs)
         self.maxRetries = 10
-        #self.app = Application(self.root, self, key)
-        #tksupport.install(self.root)
 
     def startedConnecting(self, connector):
         self.frame.addString(Messages.starting_conn)
         self.resetDelay()
 
     def buildProtocol(self, address):
-        self.line = clientConnection()
+        self.line = ClientConnection()
         self.line.factory = self
         return self.line
 
@@ -251,7 +233,7 @@ class Factory(ReconnectingClientFactory):
 def getInfo():
     address = raw_input("What address do you want to connect to?")
     port = int(raw_input("What port do you want to connect on?"))
-    key = getpass.getpass("Please enter the key")
+    key = getpass("Please enter the key")
     return address, port, key
 
 if __name__ == "__main__":

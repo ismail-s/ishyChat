@@ -21,7 +21,7 @@
 #  MA 02110-1301, USA.
 #  
 #  
-import base64, json
+import Packer
 """This file contains various messages that are displayed by the client
 (and some other stuff). I thought it would be good to put them together
 in one place rather than scattered throughout the code."""
@@ -31,12 +31,7 @@ def preprocessor(string, metadata = None):
     
     which contains a dict with the string in, along with some other
     stuff."""
-    std_dict = {'message': None, 'name': 'client', 'metadata': []}
-    if metadata:
-        std_dict['metadata'] = metadata
-    std_dict['message'] = string
-    return base64.b64encode(json.dumps(std_dict))
-
+    return Packer.makeDictAndPack(msg = string, name = 'client', metadata = metadata)
 
 start_message = preprocessor("""Hi. Type '/help' for help. Type /warning for the important warning message.""")
 

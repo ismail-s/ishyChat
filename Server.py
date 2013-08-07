@@ -24,12 +24,8 @@
 from twisted.internet import reactor, protocol
 from twisted.protocols import basic
 
-import base64, json
-class gb:
-    standard_dict = {'message': None, 'name': 'server', 'metadata': []}
-    pong_dict = dict(standard_dict)
-    pong_dict['metadata'] = ['pong']
-
+import Packer
+from Packer import makeDictAndPack
 
 class PubProtocol(basic.LineReceiver):
     def __init__(self, factory):
@@ -39,27 +35,22 @@ class PubProtocol(basic.LineReceiver):
 
     def connectionMade(self):
         msg_to_send = "Welcome to ishyChat!\n{} other people present.\nWhat's your name?".format(len(self.clients))
-        dict_to_send = dict(gb.standard_dict)
-        dict_to_send['message'] = msg_to_send
-        dict_to_send['metadata'] = ['getname']
-        self.sendLine(base64.b64encode(json.dumps(dict_to_send)))
+        self.sendLine(makeDictAndPack(msg = msg_to_send, name = 'server', metadata = ['getname']))
 
     def connectionLost(self, reason):
         if self.name in self.clients.keys():
             del self.clients[self.name]
         line = "{} has left. {} people/person still here.".format(self.name, len(self.clients))
-        dict_to_send = dict(gb.standard_dict)
-        dict_to_send['message'] = line
         for name, client in self.clients.iteritems():
-            client.sendLine(base64.b64encode(json.dumps(dict_to_send)))
+            client.sendLine(makeDictAndPack(msg = line, name = 'server', metadata = ['lostclient']))
         print self.name, "has left.", len(self.clients), "clients connected."
 
     def lineReceived(self, line):
-        if 'ping' in json.loads(base64.b64decode(line))['metadata']:
-            self.sendLine(base64.b64encode(json.dumps(gb.pong_dict)))
+        if 'ping' in (Packer.packDown(line))['metadata']:
+            self.sendLine(makeDictAndPack(name = 'server', metadata = ['pong']))
             return
         if self.state == "GETNAME":
-            self.handle_GETNAME(json.loads(base64.b64decode(line))['name'])
+            self.handle_GETNAME((Packer.packDown(line))['name'])
         elif self.state == "CHAT":
             self.handle_CHAT(line)
         else:
@@ -67,21 +58,20 @@ class PubProtocol(basic.LineReceiver):
 
     def handle_GETNAME(self, name):
         if name in self.clients.keys():
-            dict_to_send = dict(gb.standard_dict)
-            dict_to_send['message'] = "Name taken. Please choose another name"
-            self.sendLine(base64.b64encode(json.dumps(dict_to_send)))
+            message = "Name taken. Please choose another name"
+            self.sendLine(makeDictAndPack(name = 'server', msg = message))
             return
-        dict_to_send = dict(gb.standard_dict)
-        dict_to_send['message'] = "Hiya {}, or at least, that's what I think you're called!".format(name)
-        dict_to_send['metadata'] = ['gotname']
-        self.sendLine(base64.b64encode(json.dumps(dict_to_send)))
-        self.name = name
-        self.clients[name] = self
+        message = "Hiya {}, or at least, that's what I think you're called!".format(name)
+        self.sendLine(makeDictAndPack(name = 'server', metadata = ['gotname'], msg = message))
+        self.name, self.clients[name], self.state = name, self, "CHAT"
         print name, "has been added.", len(self.clients), "clients connected."
-        self.state = "CHAT"
+        message = "{} has joined the chat.".format(name)
+        string = makeDictAndPack(name = 'server', metadata = ['newclient'], msg = message)
+        for names, client in self.clients.iteritems():
+            if names != self.name:
+                self.sendLine(string)
 
     def handle_CHAT(self,line):
-        #msg = "<{}> {}".format(self.name, line)
         for name, client in self.clients.iteritems():
             client.sendLine(line)
 
@@ -96,7 +86,7 @@ class PubFactory(protocol.Factory):
         return PubProtocol(self.clients)
 
 def main():
-    reactor.listenTCP(1025, PubFactory())
+    reactor.listenTCP(int(raw_input("Please enter a port. ")), PubFactory())
     reactor.run()
 
 if __name__ == '__main__':
