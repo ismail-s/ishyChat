@@ -36,6 +36,7 @@ Run this file to run ishyChat client.
 import time
 #This module allows us to not show the key when it is entered.
 from getpass import getpass
+import argparse
 #Tkinter related imports
 import Tkinter as tk
 import ScrolledText
@@ -145,8 +146,9 @@ class Frame(ttk.Frame):
             self.addString(Messages.warning_message)
             return True
         elif string_to_check == 'ping':
-            self.factory.line.sendLine(Messages.ping_message)
-            self.ping_start = time.clock()
+            if self.state == "CONNECTED":
+                self.factory.line.sendLine(Messages.ping_message)
+                self.ping_start = time.clock()
             return True
         elif string_to_check.isdigit():  #see docstring of history_printer below.
             self._command_history_printer(int(string_to_check))
@@ -236,6 +238,21 @@ def getInfo():
     key = getpass("Please enter the key")
     return address, port, key
 
-if __name__ == "__main__":
-    address, port, key = getInfo()
+def main():
+    parser = argparse.ArgumentParser(description="A simple encrypted chat client")
+    parser.add_argument("--host", help="This is the address of the server you want to connect to")
+    parser.add_argument("--port", help="This is the port to connect to on the server", type=int)
+    parser.add_argument("--key", help="This is the key that will be used for encryption and decryption of messages.")
+    args = parser.parse_args()
+    address, port, key = args.host, args.port, args.key
+    if not address:
+        address = raw_input("What address do you want to connect to?")
+    if not port:
+        port = int(raw_input("What port do you want to connect on?"))
+    if not key:
+        key = getpass("Please enter the key")
+    #address, port, key = getInfo()
     Application(address, port, key)
+
+if __name__ == "__main__":
+    main()
