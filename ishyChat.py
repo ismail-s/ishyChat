@@ -36,17 +36,20 @@ Run this file to run ishyChat client.
 import time
 #This module allows us to not show the key when it is entered.
 from getpass import getpass
+#This module is used to parse command-line arguments and to provide
+#a nice command-line interface.
 import argparse
 #Tkinter related imports
 import Tkinter as tk
 import ScrolledText
 import ttk
+import tkFont
 #Twisted imports. Twisted is used to connect to the server
 #and send and receive messages.
 from twisted.internet import tksupport, reactor
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.protocols.basic import LineReceiver
-##The last 2 imports are local files.
+##The last 3 imports are local files.
 #import message packer/unpacker
 import Packer as Pk
 #import the encryption/decryption stuff
@@ -58,7 +61,9 @@ import Messages
 ################
 
 class Application(tk.Tk):
+    """This is the main application class holding the chat client.
 
+    All other classes are instantiated within this one."""
     def __init__(self, address, port, key):
         tk.Tk.__init__(self)
         self.protocol('WM_DELETE_WINDOW', reactor.stop)
@@ -93,14 +98,18 @@ class Frame(ttk.Frame):
         self._textboxSetUp()
         self._entryboxSetUp()
         #Pack widgets
-        self.textbox.pack(fill = tk.BOTH, expand = 1)
-        self.entrybox.pack(fill = tk.X, expand = 1, padx = 3, pady = 3)
+        self.textbox.pack(fill=tk.BOTH, expand=1)
+        self.entrybox.pack(fill=tk.X, expand=1, padx=3, pady=3)
 
     def _textboxSetUp(self):
-        self.textbox = ScrolledText.ScrolledText(self, wrap = tk.WORD, width = 50, height = 20)
+        self.textbox = ScrolledText.ScrolledText(self, wrap=tk.WORD, width=50, height=20)
+        #Set up some tags for printing bold and coloured text.
+        self.textbox.tag_config("bold", font=tkFont.Font(weight=tkFont.BOLD))
+        self.textbox.tag_config("normal", font=tkFont.Font())
+        self.textbox.tag_config("a", foreground="blue", font=tkFont.Font(underline=1))
 
     def _entryboxSetUp(self):
-        self.entrybox = ttk.Entry(self, width = 50)
+        self.entrybox = ttk.Entry(self, width=50)
         self.entrybox.bind("<Return>", self.sendStringFromEntrybox)
 
     def sendStringFromEntrybox(self, event):
@@ -109,15 +118,15 @@ class Frame(ttk.Frame):
         with it. This may be sending it, or running some other function.
         """
         string_to_send = self.entrybox.get()
-        if not string_to_send:                   #don't want to be sending nothing!
+        if not string_to_send:              # don't want to be sending nothing!
             return
-        self.entrybox.delete(0, tk.END)          #Erase entrybox
-        if self._command_parser(string_to_send): #Check if there are any commands to run.
+        self.entrybox.delete(0, tk.END)     # Erase entrybox
+        if self._command_parser(string_to_send): # Check if there are any commands to run.
             return
-        self._scrollToBottom()                   #Scroll textbox to the bottom
+        self._scrollToBottom()              # Scroll textbox to the bottom
         if self.state == "NOT CONNECTED":
             return
-        if self.state == "GET NAME":             #Names are encrypted in ECB mode.
+        if self.state == "GET NAME":        # Names are encrypted in ECB mode.
             self.name = string_to_send
             self.name_enc = self.encryptor.encrypt_ECB(self.name)
             dict_to_send = Pk.makeDict(name=self.name_enc, metadata=['name'])
@@ -133,10 +142,10 @@ class Frame(ttk.Frame):
         It checks for any commands in string, and executes them."""
         if not string.startswith('/'):
             return False
-        string_to_check = string[1:]  #get rid of the / at the start of the string.
+        string_to_check = string[1:]  # get rid of the / at the start of the string.
         if string_to_check == 'q' or string_to_check == 'quit':
-            reactor.stop()  #This line ends the program (but on some systems it crashes it, which is a bit bizarre...)
-        elif string_to_check == 'test':  #just a test string.
+            reactor.stop()  # This line ends the program (but on some systems it crashes it, which is a bit bizarre...)
+        elif string_to_check == 'test':  # just a test string.
             self.addString(Messages.test_message)
             return True
         elif string_to_check == 'help' or string_to_check == 'h':
@@ -150,7 +159,7 @@ class Frame(ttk.Frame):
                 self.factory.line.sendLine(Messages.ping_message)
                 self.ping_start = time.clock()
             return True
-        elif string_to_check.isdigit():  #see docstring of history_printer below.
+        elif string_to_check.isdigit():  # see docstring of history_printer below.
             self._command_history_printer(int(string_to_check))
             return True
         #insert more options here
@@ -190,10 +199,13 @@ class Frame(ttk.Frame):
         else:
             msg_to_add = self.encryptor.decrypt(dict_object['iv'], dict_object['message'])
             self.msgs.append(msg_to_add)
-            string_to_add = '<{}> {}'.format(self.encryptor.decrypt_ECB(dict_object['name']), msg_to_add)
+            name = '<' + self.encryptor.decrypt_ECB(dict_object['name']) + '> '
+            self.textbox.insert(tk.END, name, "bold")
+            string_to_add = msg_to_add
         string_to_add = string_to_add + '\n'
-        self.textbox.insert(tk.END, string_to_add) # This will be the entry point for implementing bold/colour text highlighting.
+        self.textbox.insert(tk.END, string_to_add, "normal") # This will be the entry point for implementing bold/colour text highlighting.
         self._scrollToBottom()
+        self.textbox.bell() # Yes, this line is just here for the fun of it...
 
     def _scrollToBottom(self):
         """Scroll the textbox to the bottom"""
