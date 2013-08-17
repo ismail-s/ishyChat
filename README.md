@@ -1,5 +1,6 @@
 #ishyChat
 A very basic chat client/server implementation written in Python and using Twisted for the connection.
+Note that this is a very early in-development version, and I am not even sure whether or not to keep using Python...
 
 ##Features
 * It works (well, this is a very early ALPHA version).

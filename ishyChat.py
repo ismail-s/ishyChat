@@ -105,7 +105,7 @@ class Frame(ttk.Frame):
         self.textbox = ScrolledText.ScrolledText(self, wrap=tk.WORD, width=50, height=20)
         #Set up some tags for printing bold and coloured text.
         self.textbox.tag_config("bold", font=tkFont.Font(weight=tkFont.BOLD))
-        self.textbox.tag_config("normal", font=tkFont.Font())
+        self.textbox.tag_config("normal", font=tkFont.Font(underline=0))
         self.textbox.tag_config("a", foreground="blue", font=tkFont.Font(underline=1))
 
     def _entryboxSetUp(self):
