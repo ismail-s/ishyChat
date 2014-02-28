@@ -2,6 +2,8 @@
 A very basic chat client/server implementation written in Python and using Twisted for the connection.
 Note that this is a very early in-development version, and I am not even sure whether or not to keep using Python...
 
+Also, there is some sort of encryption in place, but it is not very good at the moment, to put it mildly.
+
 ##Features
 * It works (well, this is a very early ALPHA version).
 * It has a cool name.
@@ -15,4 +17,5 @@ Note that this is a very early in-development version, and I am not even sure wh
 * Add command-line options and a gui interface for choosing address, port and key.
 * Add bold and colour text to make things look nicer.
 * Add hyperlink support (using the webbrowser module).
+
 Feel free to do any of these for me.
