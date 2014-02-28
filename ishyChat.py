@@ -177,30 +177,41 @@ class Frame(ttk.Frame):
         self.entrybox.insert(0, msg_to_print)
 
     def addString(self, string):
-        """Adds string to the textbox. This docstring is outdated.
+        """Adds string to the textbox (well, the parameter 'string' should actually
+        
+        be a dict in the form of a JSON string, but this dict/JSON string thingy
+        contains the message to be added to the textbox).
+        If required, the message is also decrypted before being printed to the
+        screen.
+        This function checks who sent the message, and any metadata attached to
+        the message. Based on who sent the message and what the metadata is,
+        decryption may not be done, or something else might happen.
+        
+        If the message was sent by the server then it is not decrypted.
+        If the message was sent by the server and has 'pong' in its
+        metadata, then this is interpreted as a reply to a ping message
+        that this client would have sent earlier (to time the roundtrip
+        time between client and server)."""
 
-        If required, string is also decrypted.
-        If string starts with /serv or /client, then no decryption is
-        attempted. If decryption is attempted and string is not
-        encrypted, then errors will be thrown up."""
         if not string:
-            return
-        dict_object = Pk.packDown(string)
-        if 'server' == dict_object['name']:
-            string_to_add = dict_object['message']
-            if 'getname' in dict_object['metadata']:
+            return  # If we haven't been given anything, then we don't do anything.
+        dict_obj = Pk.packDown(string)
+        name, msg, metadata = dict_obj['name'], dict_obj['message'], dict_obj['metadata']
+        if 'server' == name:
+            string_to_add = msg
+            if 'getname' in metadata:
                 self.state = "GET NAME"
-            elif 'gotname' in dict_object['metadata']:
+            elif 'gotname' in metadata:
                 self.state = "CONNECTED"
-            elif 'pong' in dict_object['metadata']:
+            elif 'pong' in metadata:
                 string_to_add = 'ping time: ' + str(time.clock() - self.ping_start)
-        elif 'client' == dict_object['name']:
-            string_to_add = dict_object['message']
+        elif 'client' == name:
+            string_to_add = msg
         else:
-            msg_to_add = self.encryptor.decrypt(dict_object['iv'], dict_object['message'])
+            msg_to_add = self.encryptor.decrypt(dict_obj['iv'], msg)
             self.msgs.append(msg_to_add)
-            name = '<' + self.encryptor.decrypt_ECB(dict_object['name']) + '> '
-            self.textbox.insert(tk.END, name, "bold")
+            name_tag = '<' + self.encryptor.decrypt_ECB(name) + '> '
+            self.textbox.insert(tk.END, name_tag, "normal")
             string_to_add = msg_to_add
         string_to_add = string_to_add + '\n'
         self.textbox.insert(tk.END, string_to_add, "normal") # This will be the entry point for implementing bold/colour text highlighting.
