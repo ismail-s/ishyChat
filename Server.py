@@ -40,7 +40,8 @@ class PubProtocol(basic.LineReceiver):
     def connectionLost(self, reason):
         if self.name in self.clients.keys():
             del self.clients[self.name]
-        line = "{} has left. {} people/person still here.".format(self.name, len(self.clients))
+        people = 'person' if (len(self.clients)-1) == 1 else 'people'
+        line = "{} has left. {} other {} still here.".format(self.name, len(self.clients)-1, people)
         for name, client in self.clients.iteritems():
             client.sendLine(makeDictAndPack(msg = line, name = 'server', metadata = ['lostclient']))
         print self.name, "has left.", len(self.clients), "clients connected."

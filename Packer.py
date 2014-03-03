@@ -43,5 +43,9 @@ def makeDictAndPack(msg = '', iv = None, metadata = None, name = None):
     return packUp(makeDict(msg, iv, metadata, name))
 
 if __name__ == '__main__':
-    test = makeDictAndPack(msg = 'test', metadata = ['test'], name = 'client')
-    print test
+    test1 = makeDictAndPack(msg = 'test', metadata = ['test'], name = 'client')
+    test1_corr_ans = '{"message": "test", "metadata": ["test"], "name": "client", "iv": null}'
+    print 'Test 1 out of 1:'
+    print 'Output', test1
+    print 'Test',
+    print 'passed' if test1 == test1_corr_ans else 'failed'
