@@ -13,6 +13,7 @@ Also, there is some sort of encryption in place, but it is not very good at the 
 * It uses JSON when sending/receiving messages. Because JSON is cool/makes the code nicer.
 
 ##TODO
+* Do more refactoring, putting client and server parts in their own folders, separating the classes in ishyChat.py into separate files.
 * Decide on a license.
 * Fix glitches and whatnot.
 * Test on Windows and between different machines.
