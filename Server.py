@@ -87,13 +87,13 @@ class PubFactory(protocol.Factory):
         return PubProtocol(self.clients)
 
 def main():
-    if len(sysargv) >= 2 and sys.argv[1].isdigit():
+    if len(sys.argv) >= 2 and sys.argv[1].isdigit():
         port = sys.argv[1]
     else:
         while True:
             port = raw_input("Please enter a port. ")
             if port.isdigit(): break
-    ssl_context_factory = ssl.DefaultOpenSSLContextFactory('keys/server.key', 'keys/server.crt')
+    ssl_context_factory = ssl.DefaultOpenSSLContextFactory('keys/server.pem', 'keys/cert.pem')
     reactor.listenSSL(int(port), PubFactory(), ssl_context_factory)
     reactor.run()
 

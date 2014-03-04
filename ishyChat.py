@@ -50,7 +50,7 @@ import tkFont
 
 #Twisted imports. Twisted is used to connect to the server
 #and send and receive messages.
-from twisted.internet import tksupport, reactor
+from twisted.internet import tksupport, reactor, ssl
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.protocols.basic import LineReceiver
 
@@ -143,10 +143,10 @@ class Frame(ttk.Frame):
         """
          # Refactor:
          # Pass the string to the line.sendLine(string_to_send)
-         
+        self.curr_hist_msg = 0 
         string_to_send = self.entrybox.get()
-        #if not string_to_send:              # don't want to be sending nothing!
-            #return
+        if not string_to_send:              # don't want to be sending nothing!
+            return
         self.entrybox.delete(0, tk.END)     # Erase entrybox
         if self._command_parser(string_to_send): # Check if there are any commands to run.
             return
@@ -189,18 +189,32 @@ class Frame(ttk.Frame):
     
     def _getNextOldMsg(self, event):
         if event.keysym == 'Down':
-            if -len(self.msgs) > self.curr_hist_msg >= 0:
+            if -len(self.msgs) > self.curr_hist_msg or self.curr_hist_msg >= 0:
                 return
             self.curr_hist_msg += 1
         elif event.keysym == 'Up':
-            if -len(self.msgs) >= self.curr_hist_msg > 0:
+            if -len(self.msgs) >= self.curr_hist_msg or self.curr_hist_msg > 0:
                 return
+
+            # Hard to explain what this does: basically, try
+            # typing something in the entrybox when the program
+            # is running, and then press and hold the up key.
+            # Then, press and hold the down key, and you'll see
+            # that the message you typed at the beginnning pops
+            # up again. That's what this thing does (with line *
+            # a bit further down too).
+            if self.curr_hist_msg == 0:
+                self.temp_first_old_msg = self.entrybox.get()
             self.curr_hist_msg -= 1
         else: return
         msg_to_send = ''
-        self.entrybox.delete(0, tk.END) # Maybe we should instead store the entrybox contents?
-        if self.curr_hist_msg < 0:
+        self.entrybox.delete(0, tk.END)
+        if -len(self.msgs) <= self.curr_hist_msg < 0:
             msg_to_send = self.msgs[self.curr_hist_msg]
+        # Lines *, as referenced in the last comment
+        elif self.curr_hist_msg == 0:
+            msg_to_send = self.temp_first_old_msg
+       
         self.entrybox.insert(0, msg_to_send)
 
     def addString(self, string_to_add, name = ''):
