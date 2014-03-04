@@ -103,6 +103,9 @@ class Frame(ttk.Frame):
         
         #We will store all the messages here.
         self.msgs = []
+        # This is -ve when a previous message is being displayed on screen,
+        # having been brought up with the up and down keys
+        self.curr_hist_msg = 0
         
         #Set up the encryption-to get rid of this line
         self.encryptor = Encryptor.Encryptor(key)
@@ -130,6 +133,8 @@ class Frame(ttk.Frame):
     def _entryboxSetUp(self):
         self.entrybox = ttk.Entry(self, width=50)
         self.entrybox.bind("<Return>", self.sendStringFromEntrybox)
+        self.entrybox.bind("<Up>", self._getNextOldMsg)
+        self.entrybox.bind("<Down>", self._getNextOldMsg)
 
     def sendStringFromEntrybox(self, event):
         """Gets whatever is in the entrybox and works out what to do
@@ -181,6 +186,22 @@ class Frame(ttk.Frame):
             return
         msg_to_print = self.msgs[-index]
         self.entrybox.insert(0, msg_to_print)
+    
+    def _getNextOldMsg(self, event):
+        if event.keysym == 'Down':
+            if -len(self.msgs) > self.curr_hist_msg >= 0:
+                return
+            self.curr_hist_msg += 1
+        elif event.keysym == 'Up':
+            if -len(self.msgs) >= self.curr_hist_msg > 0:
+                return
+            self.curr_hist_msg -= 1
+        else: return
+        msg_to_send = ''
+        self.entrybox.delete(0, tk.END) # Maybe we should instead store the entrybox contents?
+        if self.curr_hist_msg < 0:
+            msg_to_send = self.msgs[self.curr_hist_msg]
+        self.entrybox.insert(0, msg_to_send)
 
     def addString(self, string_to_add, name = ''):
         """Adds string to the textbox (well, the parameter 'string' should actually
