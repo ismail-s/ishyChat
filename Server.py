@@ -21,9 +21,9 @@
 #  MA 02110-1301, USA.
 #
 #
-from twisted.internet import reactor, protocol
+from twisted.internet import reactor, protocol, ssl
 from twisted.protocols import basic
-
+import sys
 import Packer
 from Packer import makeDictAndPack
 
@@ -87,7 +87,14 @@ class PubFactory(protocol.Factory):
         return PubProtocol(self.clients)
 
 def main():
-    reactor.listenTCP(int(raw_input("Please enter a port. ")), PubFactory())
+    if len(sysargv) >= 2 and sys.argv[1].isdigit():
+        port = sys.argv[1]
+    else:
+        while True:
+            port = raw_input("Please enter a port. ")
+            if port.isdigit(): break
+    ssl_context_factory = ssl.DefaultOpenSSLContextFactory('keys/server.key', 'keys/server.crt')
+    reactor.listenSSL(int(port), PubFactory(, ssl_context_factory)
     reactor.run()
 
 if __name__ == '__main__':
