@@ -89,7 +89,7 @@ class Application(tk.Tk):
         self.factory.frame = self.frame
         
         #Set up reactor
-        reactor.connectTCP(address, port, self.factory)
+        reactor.connectSSL(address, port, self.factory, ssl.ClientContextFactory())
         
         #Let's get this show on the road!
         reactor.run()
