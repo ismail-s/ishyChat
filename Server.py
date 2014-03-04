@@ -94,7 +94,7 @@ def main():
             port = raw_input("Please enter a port. ")
             if port.isdigit(): break
     ssl_context_factory = ssl.DefaultOpenSSLContextFactory('keys/server.key', 'keys/server.crt')
-    reactor.listenSSL(int(port), PubFactory(, ssl_context_factory)
+    reactor.listenSSL(int(port), PubFactory(), ssl_context_factory)
     reactor.run()
 
 if __name__ == '__main__':
