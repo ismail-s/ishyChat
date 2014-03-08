@@ -1,3 +1,8 @@
+# Encryption keys/certs
+*.pem
+*.csr
+
+# Python bytecode
 *.py[cod]
 
 # C extensions
