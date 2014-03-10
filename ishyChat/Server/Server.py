@@ -24,8 +24,8 @@
 from twisted.internet import reactor, protocol, ssl
 from twisted.protocols import basic
 import sys
-import Packer
-from Packer import makeDictAndPack
+import ishyChat.Utils.Packer as Packer
+from ishyChat.Utils.Packer import makeDictAndPack
 
 class PubProtocol(basic.LineReceiver):
     def __init__(self, factory):

@@ -56,13 +56,13 @@ from twisted.protocols.basic import LineReceiver
 
 ##The last 3 imports are local files.
 #import message packer/unpacker
-import Packer as Pk
+import ishyChat.Utils.Packer as Pk
 
 #import the encryption/decryption stuff
-import Encryptor
+import ishyChat.Utils.Encryptor as Encryptor
 
 #These are messages to display to the user
-import Messages
+import ishyChat.Utils.Messages as Messages
 ################
 ###End imports##
 ################

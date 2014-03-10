@@ -21,7 +21,7 @@
 #  MA 02110-1301, USA.
 #  
 #  
-import Packer
+import ishyChat.Utils.Packer as Packer
 """This file contains various messages that are displayed by the client
 (and some other stuff). I thought it would be good to put them together
 in one place rather than scattered throughout the code."""
