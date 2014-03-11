@@ -13,12 +13,14 @@ Also, there is some sort of encryption in place, but it is not very good at the 
 * It uses JSON when sending/receiving messages. Because JSON is cool/makes the code nicer.
 
 ##TODO
-* Do more refactoring, putting client and server parts in their own folders, separating the classes in ishyChat.py into separate files.
+* Do more refactoring, ~~putting client and server parts in their own folders,~~ separating the classes in ishyChat.py into separate files.
 * Decide on a license.
 * Fix glitches and whatnot.
 * Test on Windows and between different machines.
-* Add command-line options and a gui interface for choosing address, port and key.
 * Add ~~bold and~~ colour text to make things look nicer.
+* Add ~~command-line options and~~ a gui interface for choosing address, port and key.
+* Add a CLI interface using curses.
+* Maybe add a GTK interface too.
 * Add hyperlink support (using the webbrowser module).
 
 Feel free to do any of these for me.
