@@ -86,18 +86,12 @@ class PubFactory(protocol.Factory):
         #self.clients is passed so each client instance can send messages to the others.
         return PubProtocol(self.clients)
 
-def main():
-    if len(sys.argv) >= 2 and sys.argv[1].isdigit():
-        port = sys.argv[1]
-    else:
-        while True:
-            port = raw_input("Please enter a port. ")
-            if port.isdigit(): break
-    ssl_context_factory = ssl.DefaultOpenSSLContextFactory('keys/server.pem', 'keys/cert.pem')
-    reactor.listenSSL(int(port), PubFactory(), ssl_context_factory)
+def main(port):
+    ssl_context_factory = ssl.DefaultOpenSSLContextFactory('Keys/server.pem', 'Keys/cert.pem')
+    reactor.listenSSL(port, PubFactory(), ssl_context_factory)
     reactor.run()
 
 
 if __name__ == '__main__':
-	print """This is no longer intended to be run directly!
+    print """This is no longer intended to be run directly!
 Instead, run main.py in the highest directory (2 directories up)."""
