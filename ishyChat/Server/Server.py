@@ -97,5 +97,7 @@ def main():
     reactor.listenSSL(int(port), PubFactory(), ssl_context_factory)
     reactor.run()
 
+
 if __name__ == '__main__':
-	main()
+	print """This is no longer intended to be run directly!
+Instead, run main.py in the highest directory (2 directories up)."""
