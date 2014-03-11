@@ -1,5 +1,7 @@
 import argparse
 from ishyChat.Client.ishyChat import Application as TkinterApp
+from ishyChat.Server.Server import main as ServerApp
+
 prog_description = """ishyChat-A simple encrypted chat client over HTTPS with some additional (pointless, rubbish) encryption on top, just for the fun of it."""
 
 def main():
@@ -24,7 +26,8 @@ def main():
 def runClient(args):
     address, port, key = args.host, args.port, args.key
     
-    # Work on this section, make it simpler, and include checks on the values inputted
+    # Work on this section, make it simpler, and include checks on the values
+    # inputted-here and in runServer
     if not address:
         address = raw_input("What address do you want to connect to?")
     if not port:
@@ -34,9 +37,10 @@ def runClient(args):
     TkinterApp(address, port, key)
 
 def runServer(args):
-    if not port:
+    if not args.port:
         port = int(raw_input("What port do you want to listen on?"))
-    # run server with given commands-need to sort this line out
+    port = args.port
+    ServerApp(port)
 
 if __name__ == '__main__':
     main()
