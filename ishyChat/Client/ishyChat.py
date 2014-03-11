@@ -341,27 +341,6 @@ class Factory(ReconnectingClientFactory):
         ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
 
-
-def getArgs():
-    parser = argparse.ArgumentParser(description="A simple encrypted chat client")
-    parser.add_argument("--host", help="This is the address of the server you want to connect to")
-    parser.add_argument("--port", help="This is the port to connect to on the server", type=int)
-    parser.add_argument("--key", help="This is the key that will be used for encryption and decryption of messages.")
-    return parser.parse_args()
-
-def main():
-    args = getArgs()
-    address, port, key = args.host, args.port, args.key
-    
-    # Work on this section, make it simpler
-    if not address:
-        address = raw_input("What address do you want to connect to?")
-    if not port:
-        port = int(raw_input("What port do you want to connect on?"))
-    if not key:
-        key = getpass("Please enter the key")
-    
-    Application(address, port, key)
-
 if __name__ == "__main__":
-    main()
+    print """This is no longer intended to be run directly!
+Instead, run main.py in the highest directory (2 directories up)."""
