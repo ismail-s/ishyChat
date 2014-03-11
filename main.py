@@ -19,7 +19,7 @@ def main():
     server = subparsers.add_parser('server', help = "Run the server program that the chat clients connect to")
     server.add_argument("--port", help = "This is the port that the server will listen on.", type=int)
     server.set_defaults(func = runServer)
-    args = parser.parse_args(['server', '-h'])
+    args = parser.parse_args()
     args.func(args)
     
     
