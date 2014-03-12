@@ -1,6 +1,6 @@
 import argparse
 from getpass import getpass
-from ishyChat.Client.ishyChat import Application as TkinterApp
+from ishyChat.Client.Client import Application as TkinterApp
 from ishyChat.Server.Server import main as ServerApp
 
 prog_description = """ishyChat-A simple encrypted chat client over HTTPS with some additional (pointless, rubbish) encryption on top, just for the fun of it."""
