@@ -53,6 +53,15 @@ import ishyChat.Utils.Messages as Messages
 ###End imports##
 ################
 
+def runReactor(address, port, factory):
+    """Sets up the reactor and runs it.
+    
+    Basically, once the application has been set up,
+    this function is called to start the application."""
+    reactor.connectSSL(address, port, factory, ssl.ClientContextFactory())
+    
+    #Let's get this show on the road!
+    reactor.run()
 
 class ClientConnection(LineReceiver):
     def __init__(self, factory, key, *args, **kwargs):
