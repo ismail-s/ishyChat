@@ -39,13 +39,7 @@ class Application(tk.Tk):
         self.frame.factory = self.factory
         self.factory.frame = self.frame
         
-        # Set up reactor-Need to create a function in Client.py that we can call to do
-        # this stuff with the reactor
-        
-        # reactor.connectSSL(address, port, self.factory, ssl.ClientContextFactory())
-        
-        #Let's get this show on the road!
-        #reactor.run()
+        Networking.runReactor(address, port, self.factory)
 
 
 class Frame(ttk.Frame):
