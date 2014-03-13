@@ -54,9 +54,6 @@ class Frame(ttk.Frame):
         # having been brought up with the up and down keys
         self.curr_hist_msg = 0
         
-        #Set up the encryption-to get rid of this line
-        self.encryptor = Encryptor.Encryptor(key)
-        
         #Set up widgets
         self._textboxSetUp()
         self._entryboxSetUp()
