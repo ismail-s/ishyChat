@@ -20,7 +20,15 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #
-#
+# NOTES
+## Why should this file even exist? We're now running over HTTPS
+## anyway. Also, it is very rubbish encryption. The only reason
+## to add another layer of encryption is to make it so that the
+## server can't read the messages, but it can still record them
+## and try and crack them at a latr date.
+## Maybe, change the threat model to class the server as trusted?
+## Or, make this extra encryption optional?
+# End Notes
 
 #Encryption/decryption imports
 from Crypto import Random
