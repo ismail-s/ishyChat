@@ -13,7 +13,7 @@ from twisted.internet import tksupport
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 
-import ishyChat.Client.Client as Networking
+import ishyChat.Client.Networking as Networking
 
 #import the encryption/decryption stuff
 import ishyChat.Utils.Encryptor as Encryptor
