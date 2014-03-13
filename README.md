@@ -23,5 +23,7 @@ Also, there is some sort of encryption in place, but it is not very good at the 
 * Add a CLI interface using curses.
 * Maybe add a GTK interface too.
 * Add hyperlink support (using the webbrowser module).
+* Add media support (well, images, and maybe other stuff).
+* Add file sharing-ness (heck, I wonder if I'll even work through all the previous items on this list...).
 
 Feel free to do any of these for me.
