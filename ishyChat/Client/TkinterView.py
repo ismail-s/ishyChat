@@ -162,21 +162,10 @@ class Frame(ttk.Frame):
         self.entrybox.insert(0, msg_to_send)
 
     def addString(self, string_to_add, name = ''):
-        """Adds string to the textbox (well, the parameter 'string' should actually
+        """Adds string_to_add to the textbox, with optional name.
         
-        be a dict in the form of a JSON string, but this dict/JSON string thingy
-        contains the message to be added to the textbox).
-        If required, the message is also decrypted before being printed to the
-        screen.
-        This function checks who sent the message, and any metadata attached to
-        the message. Based on who sent the message and what the metadata is,
-        decryption may not be done, or something else might happen.
-        
-        If the message was sent by the server then it is not decrypted.
-        If the message was sent by the server and has 'pong' in its
-        metadata, then this is interpreted as a reply to a ping message
-        that this client would have sent earlier (to time the roundtrip
-        time between client and server)."""
+        if string_to_add is a tuple, then this is interpreted as
+        (string_to_add, name), and dealt with as such."""
 
         #  adds string to textbox, makes it look nice. If there is a name, then it adds that too.
         if not string_to_add:
