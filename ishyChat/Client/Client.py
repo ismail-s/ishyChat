@@ -64,6 +64,13 @@ def runReactor(address, port, factory):
     reactor.run()
 
 class ClientConnection(LineReceiver):
+    """This class handles sending and receiving messages
+    
+    to/from the server. It also deals with some metadata
+    and commands issued by the user, and handles them, for
+    non-view-dependent things (eg sending and receiving pings,
+    which don't depend on what sort of GUI or CLI interface
+    you're using)."""
     def __init__(self, factory, key, *args, **kwargs):
         # LineReceiver.__init__(self, *args, **kwargs)
         self.factory = factory
@@ -96,6 +103,10 @@ class ClientConnection(LineReceiver):
         self.frame.addString(string_to_add, name_tag)
     
     def sendLine(self, line):
+        """Sends line, but only after checking to see
+        
+        if anything special need to be done (this is
+        what self._command_parser does)."""
         state = self.factory.state
         if any((not line,
                self._command_parser(line),
@@ -112,6 +123,11 @@ class ClientConnection(LineReceiver):
         LineReceiver.sendLine(self, line)
         
     def _command_parser(self, line):
+        """Checks if there are any commands in line.
+        
+        If there are, then they are dealt with. Note that
+        GUI specific commands should have been dealt with
+        already."""
         if not line.startswith('/'): return
         line = line[1:].lower()
         if line == 'warning':
@@ -126,6 +142,9 @@ class ClientConnection(LineReceiver):
 
 
 class Factory(ReconnectingClientFactory):
+    """Sets up a connection, repeatedly trying to remake
+    
+    the connection if the connection fails."""
     def __init__(self, key, *args, **kwargs):
         self.maxRetries = 10
         self.key = key
