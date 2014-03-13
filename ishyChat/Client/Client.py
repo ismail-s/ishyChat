@@ -35,31 +35,17 @@ Run this file to run ishyChat client.
 #This is for timing pings.
 import time
 
-#This module allows us to not show the key when it is entered.
-from getpass import getpass
-
-#This module is used to parse command-line arguments and to provide
-#a nice command-line interface.
-import argparse
-
-#Tkinter related imports
-import Tkinter as tk
-import ScrolledText
-import ttk
-import tkFont
 
 #Twisted imports. Twisted is used to connect to the server
 #and send and receive messages.
-from twisted.internet import tksupport, reactor, ssl
-from twisted.internet.protocol import ReconnectingClientFactory
+from twisted.internet import  reactor, ssl
+from twisted.internet.protocl import ReconnectingClientFactory
 from twisted.protocols.basic import LineReceiver
 
 ##The last 3 imports are local files.
 #import message packer/unpacker
 import ishyChat.Utils.Packer as Pk
 
-#import the encryption/decryption stuff
-import ishyChat.Utils.Encryptor as Encryptor
 
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
