@@ -158,7 +158,7 @@ class Frame(ttk.Frame):
         self.entrybox.delete(0, tk.END)
         if -len(self.msgs) <= self.curr_hist_msg < 0:
             msg_to_send = self.msgs[self.curr_hist_msg]
-        # Lines *, as referenced in the last comment
+        # Line *, as referenced in the last comment
         elif self.curr_hist_msg == 0:
             msg_to_send = self.temp_first_old_msg
        
