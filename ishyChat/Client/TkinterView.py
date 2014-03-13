@@ -8,6 +8,8 @@ import ScrolledText
 import ttk
 import tkFont
 
+from twisted.internet import tksupport
+
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 
