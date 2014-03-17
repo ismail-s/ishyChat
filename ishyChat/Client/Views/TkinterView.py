@@ -15,25 +15,25 @@ import ishyChat.Utils.Messages as Messages
 
 import ishyChat.Client.Networking as Networking
 
-#import the encryption/decryption stuff
-import ishyChat.Utils.Encryptor as Encryptor
+#import the encryption/decryption stuff-seeing if I can remove this
+#import ishyChat.Utils.Encryptor as Encryptor
 
 class Application(tk.Tk):
     """This is the main application class holding the chat client.
 
     All other classes are instantiated within this one."""
-    def __init__(self, address, port, key):
+    def __init__(self, address, port):
         tk.Tk.__init__(self)
         self.protocol('WM_DELETE_WINDOW', Networking.stopReactor)
         self.wm_title("ishyChat")
         
         #Set up application
-        self.frame = Frame(self, key)
+        self.frame = Frame(self)
         self.frame.pack(fill = tk.BOTH, expand = 1)
         tksupport.install(self)
         
         #Set up factory
-        self.factory = Networking.Factory(key)
+        self.factory = Networking.Factory()
         
         #Link the two together
         self.frame.factory = self.factory
@@ -44,7 +44,7 @@ class Application(tk.Tk):
 
 class Frame(ttk.Frame):
     #Our Tkinter application stuff is held in this.
-    def __init__(self, root, key, *args, **kwargs):
+    def __init__(self, root, *args, **kwargs):
         ttk.Frame.__init__(self, root, *args, **kwargs)
         self.root = root
         
