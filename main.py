@@ -40,7 +40,8 @@ def runClient(args):
 def runServer(args):
     if not args.port:
         port = int(raw_input("What port do you want to listen on?"))
-    port = args.port
+    else:
+        port = args.port
     ServerApp(port)
 
 if __name__ == '__main__':
