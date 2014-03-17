@@ -62,7 +62,7 @@ class PubProtocol(basic.LineReceiver):
             message = "Name taken. Please choose another name"
             self.sendLine(makeDictAndPack(name = 'server', msg = message))
             return
-        message = "Hiya {}, or at least, that's what I think you're called!".format(name)
+        message = "Hiya {}!".format(name)
         self.sendLine(makeDictAndPack(name = 'server', metadata = ['gotname'], msg = message))
         self.name, self.clients[name], self.state = name, self, "CHAT"
         print name, "has been added.", len(self.clients), "clients connected."
