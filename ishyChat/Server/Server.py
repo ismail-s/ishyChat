@@ -70,7 +70,7 @@ class PubProtocol(basic.LineReceiver):
         string = makeDictAndPack(name = 'server', metadata = ['newclient'], msg = message)
         for names, client in self.clients.iteritems():
             if names != self.name:
-                self.sendLine(string)
+                client.sendLine(string)
 
     def handle_CHAT(self,line):
         for name, client in self.clients.iteritems():
