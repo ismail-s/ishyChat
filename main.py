@@ -1,5 +1,7 @@
 import argparse
 from getpass import getpass
+from Tkinter import Tk
+import tkSimpleDialog as tkDialogs
 from ishyChat.Client.Views.TkinterView import Application as TkinterApp
 from ishyChat.Server.Server import main as ServerApp
 
@@ -30,9 +32,17 @@ def runClient(args):
     # Work on this section, make it simpler, and include checks on the values
     # inputted-here and in runServer
     if not address:
-        address = raw_input("What address do you want to connect to?")
+        #address = raw_input("What address do you want to connect to?")
+        root = Tk()
+        address = tkDialogs.askstring('Address',
+            'What address do you want to connect to?')
+        root.destroy()
     if not port:
-        port = int(raw_input("What port do you want to connect on?"))
+        #port = int(raw_input("What port do you want to connect on?"))
+        root = Tk()
+        port = tkDialogs.askinteger('Port',
+            'What port do you want to connect on?')
+        root.destroy()
     #if not key:
         #key = getpass("Please enter the key")
     TkinterApp(address, port)
