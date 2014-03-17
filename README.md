@@ -19,7 +19,7 @@ Also, there is some sort of encryption in place, but it is not very good at the 
 * Fix glitches and whatnot.
 * **Test on Windows and between different machines.**
 * Add ~~bold and~~ colour text to make things look nicer.
-* Add ~~command-line options and~~ a gui interface for choosing address, port and key.
+* Add ~~command-line options and~~ a gui interface for choosing address and port.
 * Add a CLI interface using curses.
 * Maybe add a GTK interface too.
 * Add hyperlink support (using the webbrowser module).
