@@ -15,7 +15,7 @@ Also, there is some sort of encryption in place, but it is not very good at the 
 ##TODO
 * ~~Do more refactoring, putting client and server parts in their own folders, separating the classes in Client.py into separate files.~~
 * Update/add docstrings
-* Decide on a license.
+* ~~Decide on a license.~~
 * Fix glitches and whatnot.
 * **Test on Windows and between different machines.**
 * Add ~~bold and~~ colour text to make things look nicer.
