@@ -31,21 +31,20 @@ def packUp(dict_to_pack):
 def packDown(string_to_unpack):
     return json.loads(string_to_unpack)
 
-def makeDict(msg = '', iv = None, metadata = None, name = None):
+def makeDict(msg = '', metadata = None, name = None):
     if not metadata:
         metadata = []
     return {'message': msg,
-            'iv': iv,
             'metadata': metadata,
             'name': name}
 
-def makeDictAndPack(msg = '', iv = None, metadata = None, name = None):
-    return packUp(makeDict(msg, iv, metadata, name))
+def makeDictAndPack(msg = '', metadata = None, name = None):
+    return packUp(makeDict(msg, metadata, name))
 
 if __name__ == '__main__':
     test1 = makeDictAndPack(msg = 'test', metadata = ['test'], name = 'client')
-    test1_corr_ans = '{"message": "test", "metadata": ["test"], "name": "client", "iv": null}'
+    test1_corr_ans = {"message": "test", "metadata": ["test"], "name": "client"}
     print 'Test 1 out of 1:'
     print 'Output', test1
     print 'Test',
-    print 'passed' if test1 == test1_corr_ans else 'failed'
+    print 'passed' if json.loads(test1) == test1_corr_ans else 'failed'
