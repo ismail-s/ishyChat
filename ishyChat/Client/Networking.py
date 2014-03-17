@@ -39,7 +39,7 @@ import time
 #Twisted imports. Twisted is used to connect to the server
 #and send and receive messages.
 from twisted.internet import  reactor, ssl
-from twisted.internet.protocl import ReconnectingClientFactory
+from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.protocols.basic import LineReceiver
 
 ##The last 3 imports are local files.
@@ -62,6 +62,10 @@ def runReactor(address, port, factory):
     
     #Let's get this show on the road!
     reactor.run()
+
+def stopReactor(*args, **kwargs):
+    reactor.stop()
+
 
 class ClientConnection(LineReceiver):
     """This class handles sending and receiving messages

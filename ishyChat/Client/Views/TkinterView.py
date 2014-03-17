@@ -24,7 +24,7 @@ class Application(tk.Tk):
     All other classes are instantiated within this one."""
     def __init__(self, address, port, key):
         tk.Tk.__init__(self)
-        self.protocol('WM_DELETE_WINDOW', reactor.stop)
+        self.protocol('WM_DELETE_WINDOW', Networking.stopReactor)
         self.wm_title("ishyChat")
         
         #Set up application
@@ -110,7 +110,7 @@ class Frame(ttk.Frame):
         # even if the ClientConnection instance does not exist ie when
         # the chat client is not connected.
         if any((str_to_check == 'q', str_to_check == 'quit')):
-            reactor.stop()  # This line ends the program (but on some systems it crashes it, which is a bit bizarre...)
+            Networking.stopReactor()
         if any((str_to_check == 'help', str_to_check == 'h')):
             self.addString(Messages.gui_help_message)
             return True
