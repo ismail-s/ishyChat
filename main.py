@@ -1,5 +1,5 @@
-import argparse
-from getpass import getpass
+import sys, argparse
+#from getpass import getpass
 from Tkinter import Tk
 import tkSimpleDialog as tkDialogs
 from ishyChat.Client.Views.TkinterView import Application as TkinterApp
@@ -32,12 +32,18 @@ def getInput(type_of_input, *args, **kwargs):
     elif type_of_input == int:
         func = tkDialogs.askinteger
     else: return
-    res = ''
-    while True:
+    res, count = '', 0
+    
+    # Basically, in this loop, we ask the user at most twice
+    # for their input before assuming that they want to close
+    # the application, and then we quit the program.
+    while count < 2:
         res = func(*args, **kwargs)
         if res:
             root.destroy()
             return res
+        else: count +=1
+    sys.exit(1)
 
 def runClient(args):
     address, port = args.host, args.port
