@@ -27,7 +27,7 @@ import ishyChat.Utils.Packer as Packer
 in one place rather than scattered throughout the code."""
 
 def dictPreprocessor(string, metadata = None):
-    """Takes a string and produces a base64 encoded json string
+    """Takes a string and produces a json string
     
     which contains a dict with the string in, along with some other
     stuff."""
