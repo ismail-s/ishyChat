@@ -5,7 +5,7 @@ import tkSimpleDialog as tkDialogs
 from ishyChat.Client.Views.TkinterView import Application as TkinterApp
 from ishyChat.Server.Server import main as ServerApp
 
-prog_description = """ishyChat-A simple encrypted chat client over HTTPS with some additional (pointless, rubbish) encryption on top, just for the fun of it."""
+prog_description = """ishyChat-A simple encrypted chat client over HTTPS."""
 
 def main():
     parser = argparse.ArgumentParser(description = prog_description)
@@ -15,7 +15,6 @@ def main():
     client = subparsers.add_parser('client', help = "Run the (basic, simple, encrypted) chat client.")
     client.add_argument("--host", help="This is the address of the server you want to connect to")
     client.add_argument("--port", help="This is the port to connect to on the server", type=int)
-    #client.add_argument("--key", help="This is the key that will be used for encryption and decryption of messages.")
     client.set_defaults(func = runClient)
     
     # Set up arguments for the server
