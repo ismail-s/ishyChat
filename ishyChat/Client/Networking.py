@@ -46,7 +46,7 @@ from twisted.protocols.basic import LineReceiver
 #import message packer/unpacker
 import ishyChat.Utils.Packer as Pk
 
-import ishyChat.Utils.Encryptor as Encryptor
+#import ishyChat.Utils.Encryptor as Encryptor
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 ################
@@ -75,12 +75,12 @@ class ClientConnection(LineReceiver):
     non-view-dependent things (eg sending and receiving pings,
     which don't depend on what sort of GUI or CLI interface
     you're using)."""
-    def __init__(self, factory, key, *args, **kwargs):
+    def __init__(self, factory, *args, **kwargs):
         # LineReceiver.__init__(self, *args, **kwargs)
         self.factory = factory
         self.frame = self.factory.frame
-        #Set up the encryption
-        self.encryptor = Encryptor.Encryptor(key)
+        #Set up the encryption-getting rid of this
+        #self.encryptor = Encryptor.Encryptor(key)
     
     def connectionMade(self):
         self.lineReceived(Messages.start_message)
@@ -92,19 +92,15 @@ class ClientConnection(LineReceiver):
         name, msg, metadata = dict_obj['name'], dict_obj['message'], dict_obj['metadata']
         name_tag = ''
         if 'server' == name:
-            string_to_add = msg
             if 'getname' in metadata:
                 self.factory.state = "GET NAME"
             elif 'gotname' in metadata:
                 self.factory.state = "CONNECTED"
             elif 'pong' in metadata:
                 string_to_add = 'ping time: ' + str(time.clock() - self.ping_start)
-        elif 'client' == name:
-            string_to_add = msg
-        else:
-            name_tag = self.encryptor.decrypt_ECB(name)
-            string_to_add = self.encryptor.decrypt(dict_obj['iv'], msg)
-        self.frame.addString(string_to_add, name_tag)
+        elif 'client' != name:
+            name_tag = name
+        self.frame.addString(msg, name_tag)
     
     def sendLine(self, line):
         """Sends line, but only after checking to see
@@ -116,13 +112,13 @@ class ClientConnection(LineReceiver):
                self._command_parser(line),
                state == "NOT CONNECTED")): return
         
-        if state == "GET NAME":        # Names are encrypted in ECB mode.
+        if state == "GET NAME":
             self.name = line
-            self.name_enc = self.encryptor.encrypt_ECB(self.name)
-            dict_to_send = Pk.makeDict(name=self.name_enc, metadata=['name'])
+            #self.name_enc = self.encryptor.encrypt_ECB(self.name)
+            dict_to_send = Pk.makeDict(name=self.name, metadata=['name'])
         elif state == "CONNECTED":
-            iv, message = self.encryptor.encrypt(line)
-            dict_to_send = Pk.makeDict(name=self.name_enc, iv=iv, msg=message)
+            #iv, message = self.encryptor.encrypt(line)
+            dict_to_send = Pk.makeDict(name=self.name, msg=line)
         line = Pk.packUp(dict_to_send)
         LineReceiver.sendLine(self, line)
         
@@ -149,9 +145,9 @@ class Factory(ReconnectingClientFactory):
     """Sets up a connection, repeatedly trying to remake
     
     the connection if the connection fails."""
-    def __init__(self, key, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.maxRetries = 10
-        self.key = key
+        #self.key = key
         
         # The state is either "NOT CONNECTED" or "CONNECTED or GET NAME"
         # at different times.
@@ -162,7 +158,7 @@ class Factory(ReconnectingClientFactory):
         self.resetDelay()
 
     def buildProtocol(self, address):
-        self.line = ClientConnection(self, self.key)
+        self.line = ClientConnection(self)
         return self.line
 
     def clientConnectionLost(self, connector, reason):
