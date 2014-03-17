@@ -25,31 +25,37 @@ def main():
     args = parser.parse_args()
     args.func(args)
     
-    
+def getInput(type_of_input, *args, **kwargs):
+    root = Tk()
+    root.withdraw()
+    if type_of_input == str:
+        func = tkDialogs.askstring
+    elif type_of_input == int:
+        func = tkDialogs.askinteger
+    else: return
+    res = ''
+    while True:
+        res = func(*args, **kwargs)
+        if res:
+            root.destroy()
+            return res
+
 def runClient(args):
     address, port = args.host, args.port
     
-    # Work on this section, make it simpler, and include checks on the values
-    # inputted-here and in runServer
     if not address:
-        #address = raw_input("What address do you want to connect to?")
-        root = Tk()
-        address = tkDialogs.askstring('Address',
-            'What address do you want to connect to?')
-        root.destroy()
+        address = getInput(str, 'Address',
+            'What address do you want to connect to?',)
     if not port:
-        #port = int(raw_input("What port do you want to connect on?"))
-        root = Tk()
-        port = tkDialogs.askinteger('Port',
-            'What port do you want to connect on?')
-        root.destroy()
-    #if not key:
-        #key = getpass("Please enter the key")
+        port = getInput(int, 'Port',
+            'What port do you want to connect on?',
+            minvalue=1,
+            maxvalue=65535)
     TkinterApp(address, port)
 
 def runServer(args):
     if not args.port:
-        port = int(raw_input("What port do you want to listen on?"))
+        port = getInput(int, "Port", "What port do you want to listen on?")
     else:
         port = args.port
     ServerApp(port)
