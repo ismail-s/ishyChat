@@ -46,7 +46,7 @@ from twisted.protocols.basic import LineReceiver
 #import message packer/unpacker
 import ishyChat.Utils.Packer as Pk
 
-
+import ishyChat.Utils.Encryptor as Encryptor
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 ################
