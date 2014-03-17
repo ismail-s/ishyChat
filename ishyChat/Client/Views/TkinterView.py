@@ -47,13 +47,7 @@ class Frame(ttk.Frame):
     def __init__(self, root, *args, **kwargs):
         ttk.Frame.__init__(self, root, *args, **kwargs)
         self.root = root
-        
-        #We will store all the messages here.
-        self.msgs = []
-        # This is -ve when a previous message is being displayed on screen,
-        # having been brought up with the up and down keys
-        self.curr_hist_msg = 0
-        
+        self.msgdb = MessageDB()
         #Set up widgets
         self._textboxSetUp()
         self._entryboxSetUp()
@@ -85,9 +79,7 @@ class Frame(ttk.Frame):
 
         with it. This may be sending it, or running some other function.
         """
-         # Refactor:
-         # Pass the string to the line.sendLine(string_to_send)
-        self.curr_hist_msg = 0 
+        self.msgdb.reset() 
         string_to_send = self.entrybox.get()
         if not string_to_send:              # don't want to be sending nothing!
             return
@@ -114,52 +106,22 @@ class Frame(ttk.Frame):
         if any((str_to_check == 'help', str_to_check == 'h')):
             self.addString(Messages.gui_help_message)
             return True
+            
         elif str_to_check.isdigit():  # see docstring of history_printer below.
-            self._command_history_printer(int(str_to_check))
+            msg = self.msgdb.command_history_printer(int(str_to_check))
+            if msg:
+                self.entrybox.insert(0, msg)
             return True
         #insert more options here
         return False
 
-    def _command_history_printer(self, index):
-        """Prints out one of the last messages received in the entrybox.
-
-        e.g. if index is 1, then the last message received is printed.
-        if index is 2, the second-to-last message received is printed.
-        """
-        if index > len(self.msgs) or index < 1:
-            return
-        msg_to_print = self.msgs[-index]
-        self.entrybox.insert(0, msg_to_print)
-    
     def _getNextOldMsg(self, event):
-        if event.keysym == 'Down':
-            if -len(self.msgs) > self.curr_hist_msg or self.curr_hist_msg >= 0:
-                return
-            self.curr_hist_msg += 1
-        elif event.keysym == 'Up':
-            if -len(self.msgs) >= self.curr_hist_msg or self.curr_hist_msg > 0:
-                return
-
-            # Hard to explain what this does: basically, try
-            # typing something in the entrybox when the program
-            # is running, and then press and hold the up key.
-            # Then, press and hold the down key, and you'll see
-            # that the message you typed at the beginnning pops
-            # up again. That's what this thing does (with line *
-            # a bit further down too).
-            if self.curr_hist_msg == 0:
-                self.temp_first_old_msg = self.entrybox.get()
-            self.curr_hist_msg -= 1
+        if event.keysym in ('Up', 'Down'):
+            res = self.msgdb.getNextOldMsg(event.keysym, self.entrybox.get())
         else: return
-        msg_to_send = ''
+        if res == -1: return
         self.entrybox.delete(0, tk.END)
-        if -len(self.msgs) <= self.curr_hist_msg < 0:
-            msg_to_send = self.msgs[self.curr_hist_msg]
-        # Line *, as referenced in the last comment
-        elif self.curr_hist_msg == 0:
-            msg_to_send = self.temp_first_old_msg
-       
-        self.entrybox.insert(0, msg_to_send)
+        self.entrybox.insert(0, res)
 
     def addString(self, string_to_add, name = ''):
         """Adds string_to_add to the textbox, with optional name.
@@ -172,7 +134,7 @@ class Frame(ttk.Frame):
             return  # If we haven't been given anything, then we don't do anything.
         if isinstance(string_to_add, tuple):
             string_to_add, name = string_to_add
-        self.msgs.append(string_to_add)
+        self.msgdb.append(string_to_add)
         if name:
             self.textbox.insert(tk.END, ''.join(('<', name, '>',)), "bold")
         self.textbox.insert(tk.END, string_to_add + '\n', "normal") # This will be the entry point for implementing bold/colour text highlighting.
@@ -182,3 +144,68 @@ class Frame(ttk.Frame):
     def _scrollToBottom(self):
         """Scroll the textbox to the bottom"""
         self.textbox.yview(tk.END)
+
+class MessageDB(object):
+    """This class holds all messages in the textbox on screen
+
+    and implements terminal-esque previous text printing (I
+    have trouble explaining it better-read the code)."""
+    def __init__(self):
+        #We will store all the messages here
+        self.msgs = []
+        
+        # This is -ve when a previous message is being displayed on screen,
+        # having been brought up with the up and down keys
+        self.curr_hist_msg = 0
+        self.temp_first_old_msg = ''
+    
+    def append(self, string):
+        if string:
+            self.msgs.append(string)
+            
+    def reset(self):
+        self.curr_hist_msg = 0
+    
+    def command_history_printer(self, index):
+        """Prints out one of the last messages received in the entrybox.
+
+        e.g. if index is 1, then the last message received is printed.
+        if index is 2, the second-to-last message received is printed.
+        """
+        if index > len(self.msgs) or index < 1:
+            return
+        msg_to_print = self.msgs[-index]
+        return msg_to_print
+    
+    def getNextOldMsg(self, event, curr_msg):
+        """This takes in a string, either 'Up' or 'Down',
+        
+        and returns some corresponding previous message."""
+        if event == 'Down':
+            if -len(self.msgs) > self.curr_hist_msg or self.curr_hist_msg >= 0:
+                return -1
+            self.curr_hist_msg += 1
+        elif event == 'Up':
+            if -len(self.msgs) >= self.curr_hist_msg or self.curr_hist_msg > 0:
+                return -1
+
+            # Hard to explain what this does: basically, try
+            # typing something in the entrybox when the program
+            # is running, and then press and hold the up key.
+            # Then, press and hold the down key, and you'll see
+            # that the message you typed at the beginnning pops
+            # up again. That's what this thing does (with line *
+            # a bit further down too).
+            if self.curr_hist_msg == 0:
+                self.temp_first_old_msg = curr_msg
+            self.curr_hist_msg -= 1
+        else: return -1
+        msg_to_send = ''
+        #self.entrybox.delete(0, tk.END)
+        if -len(self.msgs) <= self.curr_hist_msg < 0:
+            msg_to_send = self.msgs[self.curr_hist_msg]
+        # Line *, as referenced in the last comment
+        elif self.curr_hist_msg == 0:
+            msg_to_send = self.temp_first_old_msg
+        
+        return msg_to_send
