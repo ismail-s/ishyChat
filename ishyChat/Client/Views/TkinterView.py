@@ -165,9 +165,10 @@ class Frame(ttk.Frame):
         """
         self.msgdb.reset() 
         string_to_send = self.entrybox.get()
-        if not string_to_send:              # don't want to be sending nothing!
-            return
         self.entrybox.delete(0, tk.END)     # Erase entrybox
+        if any([not string_to_send, string_to_send == '',
+                string_to_send.isspace()]): # don't want to be sending nothing!
+            return
         if self._command_parser(string_to_send): # Check if there are any commands to run.
             return
         self._scrollToBottom()              # Scroll textbox to the bottom
