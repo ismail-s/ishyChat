@@ -127,11 +127,15 @@ class Frame(ttk.Frame):
     def __init__(self, root, *args, **kwargs):
         ttk.Frame.__init__(self, root, *args, **kwargs)
         self.root = root
-        self.msgdb = MessageDB()
+        
         #Set up widgets
         self._textboxSetUp()
         self._entryboxSetUp()
         
+        self.msgdb = MessageDB()
+        
+        # This line must be called after _textboxSetUp() 
+        self.clientdb = ClientDB(self.textbox)
         #Pack widgets
         self.textbox.pack(fill=tk.BOTH, expand=1)
         self.entrybox.pack(fill=tk.X, expand=1, padx=3, pady=3)
@@ -216,7 +220,7 @@ class Frame(ttk.Frame):
             string_to_add, name = string_to_add
         self.msgdb.append(string_to_add)
         if name:
-            self.textbox.insert(tk.END, ''.join(('<', name, '>',)), "bold")
+            self.textbox.insert(tk.END, ''.join(('<', name, '>',)), ("bold", "name_" + name))
         self.textbox.insert(tk.END, string_to_add + '\n', "normal") # This will be the entry point for implementing bold/colour text highlighting.
         self._scrollToBottom()
         self.textbox.bell() # Yes, this line is just here for the fun of it...
@@ -296,12 +300,13 @@ class ClientDB(object):
     
     chatroom we're connnected to, and for each person,
     we have a corresponding colour"""
-    def __init__(self):
+    def __init__(self, textbox):
         # Create a dict to hold the names of all the clients
         # and their corresponding colour. If they don't yet
         # have a colour, then this is ''.
         self.db = {}
         self.colours = COLOURS
+        self.textbox = textbox
     
     def addClient(self, new_name):
         if new_name in self.db:
@@ -318,6 +323,8 @@ class ClientDB(object):
                 if entry not in self.db.values():
                     self.db[new_name] = entry
                     break
+        self.textbox.tag_config('client_' + new_name,
+                        foreground = self.db[new_name])
     
     def removeClient(self, name_to_delete):
         del self.db[name_to_delete]
