@@ -76,6 +76,12 @@ class ClientConnection(LineReceiver):
                 self.factory.state = "CONNECTED"
             elif 'pong' in metadata:
                 string_to_add = 'ping time: ' + str(time.clock() - self.ping_start)
+            elif 'newclient' in metadata:
+                new_name = msg[:msg.find(' ')]
+                self.frame.addClient(new_name)
+            elif 'lostclient' in metadata:
+                name_to_remove = msg[:msg.find(' ')]
+                self.frame.removeClient(name_to_remove)
         elif 'client' != name:
             name_tag = name
         self.frame.addString(msg, name_tag)
