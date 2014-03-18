@@ -220,7 +220,7 @@ class Frame(ttk.Frame):
             string_to_add, name = string_to_add
         self.msgdb.append(string_to_add)
         if name:
-            self.textbox.insert(tk.END, ''.join(('<', name, '>',)), ("bold", "name_" + name))
+            self.textbox.insert(tk.END, ''.join(('<', name, '>',)), ("bold", "client_" + name))
         self.textbox.insert(tk.END, string_to_add + '\n', "normal") # This will be the entry point for implementing bold/colour text highlighting.
         self._scrollToBottom()
         self.textbox.bell() # Yes, this line is just here for the fun of it...
