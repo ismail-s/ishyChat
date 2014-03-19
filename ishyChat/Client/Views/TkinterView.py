@@ -136,6 +136,8 @@ class Frame(ttk.Frame):
         
         # This line must be called after _textboxSetUp() 
         self.clientdb = ClientDB(self.textbox)
+        self.addClient = self.clientdb.addClient
+        self.removeClient = self.clientdb.removeClient
         #Pack widgets
         self.textbox.pack(fill=tk.BOTH, expand=1)
         self.entrybox.pack(fill=tk.X, expand=1, padx=3, pady=3)
@@ -221,6 +223,8 @@ class Frame(ttk.Frame):
             string_to_add, name = string_to_add
         self.msgdb.append(string_to_add)
         if name:
+            self.addClient(name) # The clientName may/may not be known-this
+            # call just makes sure
             self.textbox.insert(tk.END, ''.join(('<', name, '>',)), ("bold", "client_" + name))
         self.textbox.insert(tk.END, string_to_add + '\n', "normal") # This will be the entry point for implementing bold/colour text highlighting.
         self._scrollToBottom()
@@ -311,7 +315,7 @@ class ClientDB(object):
     
     def addClient(self, new_name):
         if new_name in self.db:
-            return # Maybe this should be an exception...
+            return
         self.db[new_name] = ''
         
         colour, flat_name = '', new_name.lower()
@@ -319,7 +323,7 @@ class ClientDB(object):
             if flat_name in entry:
                 self.db[new_name] = entry
                 break
-        if self.db[new_name] = '':
+        if self.db[new_name] == '':
             for entry in self.colours:
                 if entry not in self.db.values():
                     self.db[new_name] = entry
