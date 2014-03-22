@@ -12,9 +12,9 @@
 
 Metadata-this is a big fat list. Items are just strings, and lists within metadata are arguments of the previous item.
 
-'''JSON
+```JSON
 {'message' : msg,
  'name'    : name (eg green..., client, server),
  'metadata;: [ping/pong, changename, [newname], gotname, getusers/gotusers],
 }
-'''
+```
