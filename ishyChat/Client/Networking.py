@@ -76,7 +76,7 @@ class ClientConnection(LineReceiver):
                 self.factory.state = "CONNECTED"
                 self.frame.addClient(self.name)
             elif 'pong' in metadata:
-                string_to_add = 'ping time: ' + str(time.clock() - self.ping_start)
+                msg = 'ping time: ' + str(time.clock() - self.ping_start)
             elif 'newclient' in metadata:
                 new_name = msg[:msg.find(' ')]
                 self.frame.addClient(new_name)
