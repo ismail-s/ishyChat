@@ -53,7 +53,15 @@ class TestEncryptor(unittest.TestCase):
         res = self.enc.decrypt_ECB(res)
         self.assertEqual(res, '')
     
+# class TestServer(unittest.TestCase):
+    # Will need to create a mock factory, with mock clients.
+    # Will need to override sys.stdout with a mock object
+    # to pick up any print statements and record them.
     
+    # Will need to test only connectionMade, connectionLost
+    # and lineReceived at most
+
+
     
     
 
