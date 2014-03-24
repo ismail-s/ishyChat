@@ -18,6 +18,18 @@ class TestPacker(unittest.TestCase):
         self.assertEqual(res, {})
     # Need to add many more tests and more useful
     # tests eg checking if things like pings work
+    
+    def test_makeDict_returns_valid_dict_when_given_no_args(self):
+        res = Packer.makeDict()
+        ans = {'message': '', 'name': None, 'metadata': []}
+        self.assertEqual(res, ans)
+    
+    def test_makeDictAndPack_creates_a_valid_dict(self):
+        res = Packer.makeDictAndPack(msg = 'test', metadata = ['test'], name = 'client')
+        res = Packer.packDown(res)
+        self.assertIsInstance(res, dict)
+    
+    
 
 
 if __name__ == '__main__':
