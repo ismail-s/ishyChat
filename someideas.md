@@ -12,9 +12,14 @@
 
 Metadata-this is a big fat list. Items are just strings, and lists within metadata are arguments of the previous item.
 
-```JSON
-{'message' : msg,
- 'name'    : name (eg green..., client, server),
- 'metadata;: [ping/pong, changename, [newname], gotname, getusers/gotusers],
+```python
+{'message' : 'msg',
+ 'name'    : 'jim', # (eg green..., client, server)
+ 'metadata': {'ping/pong': True,
+              'newname': 'john',
+              'gotname': True,
+              'getusers': True,
+              'gotusers': ['list_of_all_users']
+             },
 }
 ```
