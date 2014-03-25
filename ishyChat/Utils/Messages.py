@@ -15,17 +15,14 @@ def dictPreprocessor(string, metadata = None):
 
 def tuplePreprocessor(string, name = ''): return (string, name)
 
-start_message = dictPreprocessor("""Hi. Type '/help' for help. Type /warning for the important warning message.""")
+start_message = dictPreprocessor("""Hi. Type '/help' for help.""")
 
-warning_message = dictPreprocessor("""Please note that I have no way of knowing if you typed the key correctly. If it was typed incorrectly, then you will quite soon see some mumbo-jumbo text on-screen instead of messages from other users.
-All messages are encrypted using the key you entered at the beginning. This key should have been the same one everyone else is using, otherwise the chat won't work. The key should have been ideally 32 characters long to make it more secure.
-Also note that the server only receives an encrypted version of the client's names.
-The server will now speak to you, so please follow its instructions.
+warning_message = dictPreprocessor("""Warning: This connection hopefully will be running over HTTPS. However, the server that everyone connects to can (and may) read all the messages. Therefore, make sure you know and trust the person who is running the server.
 
 """)
 
 gui_help_message = tuplePreprocessor("""Help
-ishyChat is a very simple minimalistic chat client. You make sure that one person has fired up the server, and then everyone else starts their clients (this thing) and gives it the address and pre-shared key (for encryption).
+ishyChat is a very simple minimalistic chat client. You make sure that one person has fired up the server, and then everyone else starts their clients (this thing) and gives it the address and port.
 Commands
 Commands are prefixed with a '/'.
 /q        Quit the program.
@@ -35,7 +32,8 @@ Commands are prefixed with a '/'.
 /help     Same as /h
 /warning  Prints the warning message.
 /ping     Prints the roundtime between you and the server.
-/[number] This one is a bit of a funny one. You give it a number, and it displays that message in the entrybox. For example, typing /1 would print the last received message in the entrybox. This facilitates resending a recently received message, or quoting what someone else said.
+/[number] [number] must be >=1. Hard to explain what this does-just try it out.
+Also, try pressing the up and down keys whilst the cursor is in the entrybox (where you type messages).
 """)
 
 ping_message = dictPreprocessor("", ['ping'])
