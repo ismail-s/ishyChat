@@ -74,6 +74,8 @@ class ClientConnection(LineReceiver):
                 self.factory.state = "GET NAME"
             elif 'gotname' in metadata:
                 self.factory.state = "CONNECTED"
+                #Sends off a request for all the users in the chatroom
+                LineReceiver.sendLine(Messages.getusers_message)
                 self.app.addClient(self.name)
             elif 'pong' in metadata:
                 msg = 'ping time: ' + str(time.clock() - self.ping_start)
@@ -83,6 +85,11 @@ class ClientConnection(LineReceiver):
             elif 'lostclient' in metadata:
                 name_to_remove = msg[:msg.find(' ')]
                 self.app.removeClient(name_to_remove)
+            elif 'gotusers' in metadata:
+                list_of_users = metadata['gotusers']
+                self.app.addClients(*list_of_users)
+                msg = 'Users in chatroom: ' + ' '.join(list_of_users)
+        
         elif 'client' != name:
             name_tag = name
         self.app.addString(msg, name_tag)
