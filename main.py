@@ -56,7 +56,8 @@ def runClient(args):
             'What port do you want to connect on?',
             minvalue=1,
             maxvalue=65535)
-    TkinterApp(address, port)
+    app = TkinterApp()
+    app.run(address, port)
 
 def runServer(args):
     if not args.port:
