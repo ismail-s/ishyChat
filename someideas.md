@@ -13,8 +13,9 @@
 Metadata-this is a big fat list. Items are just strings, and lists within metadata are arguments of the previous item.
 
 ```python
-{'message' : 'msg',
- 'name'    : 'jim', # (eg green..., client, server)
+{'type'    : 'text/image/file' # Type of message being sent
+ 'message' : 'msg',
+ 'name'    : 'jim',            # (eg green..., client, server)
  'metadata': {'ping/pong': True,
               'newname': 'john',
               'gotname': True,
