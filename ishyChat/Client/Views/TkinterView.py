@@ -117,7 +117,7 @@ class Application(tk.Tk):
         
         #Link the two together
         self.frame.factory = self.factory
-        self.factory.frame = self.frame
+        self.factory.app = self.frame
         
         Networking.runReactor(address, port, self.factory)
 
