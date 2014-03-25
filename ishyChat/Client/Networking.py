@@ -100,7 +100,7 @@ class ClientConnection(LineReceiver):
         if state == "GET NAME":
             self.name = line
             #self.name_enc = self.encryptor.encrypt_ECB(self.name)
-            dict_to_send = Pk.makeDict(name=self.name, metadata=['name'])
+            dict_to_send = Pk.makeDict(name=self.name, metadata={'newname': None})
         elif state == "CONNECTED":
             #iv, message = self.encryptor.encrypt(line)
             dict_to_send = Pk.makeDict(name=self.name, msg=line)
