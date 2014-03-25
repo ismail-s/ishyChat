@@ -11,19 +11,20 @@ def packUp(dict_to_pack):
 def packDown(string_to_unpack):
     return json.loads(string_to_unpack)
 
-def makeDict(msg = '', metadata = None, name = None):
+def makeDict(type = 'text', msg = '', metadata = None, name = None):
     if not metadata:
-        metadata = []
-    return {'message': msg,
+        metadata = {}
+    return {'type': type,
+            'message': msg,
             'metadata': metadata,
             'name': name}
 
-def makeDictAndPack(msg = '', metadata = None, name = None):
-    return packUp(makeDict(msg, metadata, name))
+def makeDictAndPack(type = 'text', msg = '', metadata = None, name = None):
+    return packUp(makeDict(type, msg, metadata, name))
 
 if __name__ == '__main__':
-    test1 = makeDictAndPack(msg = 'test', metadata = ['test'], name = 'client')
-    test1_corr_ans = {"message": "test", "metadata": ["test"], "name": "client"}
+    test1 = makeDictAndPack(msg = 'test', metadata = {'test': None}, name = 'client')
+    test1_corr_ans = {"message": "test", "metadata": {"test": null}, "name": "client"}
     print 'Test 1 out of 1:'
     print 'Output', test1
     print 'Test',
