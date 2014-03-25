@@ -53,10 +53,10 @@ class ClientConnection(LineReceiver):
     non-view-dependent things (eg sending and receiving pings,
     which don't depend on what sort of GUI or CLI interface
     you're using)."""
-    def __init__(self, factory, *args, **kwargs):
+    def __init__(self, factory, application *args, **kwargs):
         # LineReceiver.__init__(self, *args, **kwargs)
         self.factory = factory
-        self.frame = self.factory.frame
+        self.app = application
         #Set up the encryption-getting rid of this
         #self.encryptor = Encryptor.Encryptor(key)
     
@@ -74,18 +74,18 @@ class ClientConnection(LineReceiver):
                 self.factory.state = "GET NAME"
             elif 'gotname' in metadata:
                 self.factory.state = "CONNECTED"
-                self.frame.addClient(self.name)
+                self.app.addClient(self.name)
             elif 'pong' in metadata:
                 msg = 'ping time: ' + str(time.clock() - self.ping_start)
             elif 'newclient' in metadata:
                 new_name = msg[:msg.find(' ')]
-                self.frame.addClient(new_name)
+                self.app.addClient(new_name)
             elif 'lostclient' in metadata:
                 name_to_remove = msg[:msg.find(' ')]
-                self.frame.removeClient(name_to_remove)
+                self.app.removeClient(name_to_remove)
         elif 'client' != name:
             name_tag = name
-        self.frame.addString(msg, name_tag)
+        self.app.addString(msg, name_tag)
     
     def sendLine(self, line):
         """Sends line, but only after checking to see
@@ -139,20 +139,20 @@ class Factory(ReconnectingClientFactory):
         self.state = "NOT CONNECTED"
 
     def startedConnecting(self, connector):
-        self.frame.addString(Messages.starting_conn)
+        self.app.addString(Messages.starting_conn)
         self.resetDelay()
 
     def buildProtocol(self, address):
-        self.line = ClientConnection(self)
+        self.line = ClientConnection(self, self.app)
         return self.line
 
     def clientConnectionLost(self, connector, reason):
-        self.frame.addString(Messages.conn_lost)
+        self.app.addString(Messages.conn_lost)
         self.state = "NOT CONNECTED"
         ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
-        self.frame.addString(Messages.conn_failed)
+        self.app.addString(Messages.conn_failed)
         self.state = "NOT CONNECTED"
         ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
