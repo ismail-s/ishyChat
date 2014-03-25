@@ -239,6 +239,13 @@ class ClientDB(object):
         self.colours = COLOURS
         self.textbox = textbox
     
+    def addClients(self, *args, **kwargs):
+        "Adds a list of clients"
+        for client in args:
+            self.addClient(client)
+        for client in kwargs.values():
+            self.addClient(client)
+    
     def addClient(self, new_name):
         if new_name in self.db:
             return
