@@ -53,6 +53,9 @@ class PubProtocol(basic.LineReceiver):
                 client.sendLine(string)
 
     def handle_CHAT(self,line):
+        # Maybe these next 2 lines should be moved into lineReceived
+        if 'getusers' in Packer.Packdown(line)['metadata']:
+            self.sendLine(makeDictAndPack(name = 'server', metadata = {'gotusers': self.clients.keys()}))
         for name, client in self.clients.iteritems():
             client.sendLine(line)
 
