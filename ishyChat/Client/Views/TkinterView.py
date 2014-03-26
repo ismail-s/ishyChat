@@ -64,6 +64,8 @@ class Frame(ttk.Frame):
         self.clientdb = ClientDB(self.textbox)
         self.addClient = self.clientdb.addClient
         self.removeClient = self.clientdb.removeClient
+        self.addClients = self.clientdb.addClients
+        
         #Pack widgets
         self.textbox.pack(fill=tk.BOTH, expand=1)
         self.entrybox.pack(fill=tk.X, expand=1, padx=3, pady=3)
