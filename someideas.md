@@ -43,7 +43,10 @@ These are related to setting up hyperlinks for Tkinter
 * This may require using addReader/addWriter-this needs further research/testing
 
 ##Image support
+* Use PIL http://effbot.org/imagingbook/pil-index.htm
 * Images will have to be limited in filesize and size in textbox
+* /img or /image, and then the url. If no url is provided, then can open a file selector dialog.
+* Should clients see the image straightaway, or have the option to view it by clicking on a link?
 * For CLI View, look into:
  * http://stevendkay.wordpress.com/2009/09/08/generating-ascii-art-from-photographs-in-python/
  * http://playpython.blogspot.co.uk/2012/08/generate-ascii-image-of-yours.html
