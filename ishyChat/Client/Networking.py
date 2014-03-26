@@ -74,8 +74,7 @@ class ClientConnection(LineReceiver):
                 self.factory.state = "GET NAME"
             elif 'gotname' in metadata:
                 self.factory.state = "CONNECTED"
-                #Sends off a request for all the users in the chatroom
-                LineReceiver.sendLine(Messages.getusers_message)
+                self.getUsers()
                 self.app.addClient(self.name)
             elif 'pong' in metadata:
                 msg = 'ping time: ' + str(time.clock() - self.ping_start)
@@ -130,7 +129,14 @@ class ClientConnection(LineReceiver):
                 LineReceiver.sendLine(self, Messages.ping_message)
                 self.ping_start = time.clock()
                 return True
+        elif any([line == 'list', line == 'listusers']):
+            if self.factory.state == "CONNECTED":
+                self.getUsers()
         return False
+    
+    def getUsers(self):
+        """Asks the server for a list of people in the chatroom"""
+        LineReceiver.sendLine(self, Messages.getusers_message)
 
 
 class Factory(ReconnectingClientFactory):
