@@ -36,7 +36,7 @@ These are related to setting up hyperlinks for Tkinter
 ###Discussion
 * For the Tkinter hyperlinks, there can be a separate hyperlnks module.
 * Then, when text is to be added, it is parsed and a list of tuples/lists is made by some separate view-independent code.
-* Each tuple has a fragment of text and wht type of text it is (eg normal, hyperlink, @mention)
+* Each tuple has a fragment of text and what type of text it is (eg normal, hyperlink, @mention)
 * Then, we can run through and insert each text fragment with the corresponding tags
 
 ##CLI view
