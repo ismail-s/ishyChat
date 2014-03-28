@@ -15,7 +15,7 @@ class PubProtocol(basic.LineReceiver):
 
     def connectionMade(self):
         msg_to_send = "Welcome to ishyChat!\n{} other people present.\nWhat's your name?".format(len(self.clients))
-        self.sendLine(makeDictAndPack(msg = msg_to_send, name = 'server', metadata = ['getname']))
+        self.sendLine(makeDictAndPack(msg = msg_to_send, name = 'server', metadata = {'getname': None}))
 
     def connectionLost(self, reason):
         if self.name in self.clients.keys():
@@ -23,12 +23,12 @@ class PubProtocol(basic.LineReceiver):
         people = 'person' if (len(self.clients)-1) == 1 else 'people'
         line = "{} has left. {} other {} still here.".format(self.name, len(self.clients)-1, people)
         for name, client in self.clients.iteritems():
-            client.sendLine(makeDictAndPack(msg = line, name = 'server', metadata = ['lostclient']))
+            client.sendLine(makeDictAndPack(msg = line, name = 'server', metadata = {'lostclient': None}))
         print self.name, "has left.", len(self.clients), "clients connected."
 
     def lineReceived(self, line):
         if 'ping' in (Packer.packDown(line))['metadata']:
-            self.sendLine(makeDictAndPack(name = 'server', metadata = ['pong']))
+            self.sendLine(makeDictAndPack(name = 'server', metadata = {'pong': None}))
             return
         if self.state == "GETNAME":
             self.handle_GETNAME((Packer.packDown(line))['name'])
@@ -43,7 +43,7 @@ class PubProtocol(basic.LineReceiver):
             self.sendLine(makeDictAndPack(name = 'server', msg = message))
             return
         message = "Hiya {}!".format(name)
-        self.sendLine(makeDictAndPack(name = 'server', metadata = ['gotname'], msg = message))
+        self.sendLine(makeDictAndPack(name = 'server', metadata = {'gotname': None}, msg = message))
         self.name, self.clients[name], self.state = name, self, "CHAT"
         print name, "has been added.", len(self.clients), "clients connected."
         message = "{} has joined the chat.".format(name)
@@ -53,6 +53,9 @@ class PubProtocol(basic.LineReceiver):
                 client.sendLine(string)
 
     def handle_CHAT(self,line):
+        # Maybe these next 2 lines should be moved into lineReceived
+        if 'getusers' in Packer.Packdown(line)['metadata']:
+            self.sendLine(makeDictAndPack(name = 'server', metadata = {'gotusers': self.clients.keys()}))
         for name, client in self.clients.iteritems():
             client.sendLine(line)
 

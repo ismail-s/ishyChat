@@ -53,10 +53,10 @@ class ClientConnection(LineReceiver):
     non-view-dependent things (eg sending and receiving pings,
     which don't depend on what sort of GUI or CLI interface
     you're using)."""
-    def __init__(self, factory, *args, **kwargs):
+    def __init__(self, factory, application *args, **kwargs):
         # LineReceiver.__init__(self, *args, **kwargs)
         self.factory = factory
-        self.frame = self.factory.app
+        self.app = application
         #Set up the encryption-getting rid of this
         #self.encryptor = Encryptor.Encryptor(key)
     
@@ -74,18 +74,24 @@ class ClientConnection(LineReceiver):
                 self.factory.state = "GET NAME"
             elif 'gotname' in metadata:
                 self.factory.state = "CONNECTED"
-                self.frame.addClient(self.name)
+                self.getUsers()
+                self.app.addClient(self.name)
             elif 'pong' in metadata:
                 msg = 'ping time: ' + str(time.clock() - self.ping_start)
             elif 'newclient' in metadata:
                 new_name = msg[:msg.find(' ')]
-                self.frame.addClient(new_name)
+                self.app.addClient(new_name)
             elif 'lostclient' in metadata:
                 name_to_remove = msg[:msg.find(' ')]
-                self.frame.removeClient(name_to_remove)
+                self.app.removeClient(name_to_remove)
+            elif 'gotusers' in metadata:
+                list_of_users = metadata['gotusers']
+                self.app.addClients(*list_of_users)
+                msg = 'Users in chatroom: ' + ' '.join(list_of_users)
+        
         elif 'client' != name:
             name_tag = name
-        self.frame.addString(msg, name_tag)
+        self.app.addString(msg, name_tag)
     
     def sendLine(self, line):
         """Sends line, but only after checking to see
@@ -100,7 +106,7 @@ class ClientConnection(LineReceiver):
         if state == "GET NAME":
             self.name = line
             #self.name_enc = self.encryptor.encrypt_ECB(self.name)
-            dict_to_send = Pk.makeDict(name=self.name, metadata=['name'])
+            dict_to_send = Pk.makeDict(name=self.name, metadata={'newname': None})
         elif state == "CONNECTED":
             #iv, message = self.encryptor.encrypt(line)
             dict_to_send = Pk.makeDict(name=self.name, msg=line)
@@ -123,7 +129,14 @@ class ClientConnection(LineReceiver):
                 LineReceiver.sendLine(self, Messages.ping_message)
                 self.ping_start = time.clock()
                 return True
+        elif any([line == 'list', line == 'listusers']):
+            if self.factory.state == "CONNECTED":
+                self.getUsers()
         return False
+    
+    def getUsers(self):
+        """Asks the server for a list of people in the chatroom"""
+        LineReceiver.sendLine(self, Messages.getusers_message)
 
 
 class Factory(ReconnectingClientFactory):
@@ -143,7 +156,7 @@ class Factory(ReconnectingClientFactory):
         self.resetDelay()
 
     def buildProtocol(self, address):
-        self.line = ClientConnection(self)
+        self.line = ClientConnection(self, self.app)
         return self.line
 
     def clientConnectionLost(self, connector, reason):
@@ -152,7 +165,7 @@ class Factory(ReconnectingClientFactory):
         ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
-        self.frame.addString(Messages.conn_failed)
+        self.app.addString(Messages.conn_failed)
         self.state = "NOT CONNECTED"
         ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 

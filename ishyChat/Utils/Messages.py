@@ -6,7 +6,7 @@ import ishyChat.Utils.Packer as Packer
 (and some other stuff). I thought it would be good to put them together
 in one place rather than scattered throughout the code."""
 
-def dictPreprocessor(string, metadata = None):
+def dictPreprocessor(string = '', metadata = None):
     """Takes a string and produces a json string
     
     which contains a dict with the string in, along with some other
@@ -36,8 +36,8 @@ Commands are prefixed with a '/'.
 Also, try pressing the up and down keys whilst the cursor is in the entrybox (where you type messages).
 """)
 
-ping_message = dictPreprocessor("", ['ping'])
-
+ping_message = dictPreprocessor(metadata = {'ping': None})
+getusers_message = dictPreprocessor(metadata = {'getusers': None})
 
 starting_conn = tuplePreprocessor("Started to connect.")
 conn_lost = tuplePreprocessor("Connection lost. Attempting to re-establish connection.")
