@@ -56,7 +56,7 @@ class ClientConnection(LineReceiver):
     def __init__(self, factory, *args, **kwargs):
         # LineReceiver.__init__(self, *args, **kwargs)
         self.factory = factory
-        self.frame = self.factory.frame
+        self.frame = self.factory.app
         #Set up the encryption-getting rid of this
         #self.encryptor = Encryptor.Encryptor(key)
     
@@ -139,7 +139,7 @@ class Factory(ReconnectingClientFactory):
         self.state = "NOT CONNECTED"
 
     def startedConnecting(self, connector):
-        self.frame.addString(Messages.starting_conn)
+        self.app.addString(Messages.starting_conn)
         self.resetDelay()
 
     def buildProtocol(self, address):
@@ -147,7 +147,7 @@ class Factory(ReconnectingClientFactory):
         return self.line
 
     def clientConnectionLost(self, connector, reason):
-        self.frame.addString(Messages.conn_lost)
+        self.app.addString(Messages.conn_lost)
         self.state = "NOT CONNECTED"
         ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
