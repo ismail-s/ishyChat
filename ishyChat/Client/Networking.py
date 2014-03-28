@@ -118,7 +118,13 @@ class ClientConnection(LineReceiver):
         
         If there are, then they are dealt with. Note that
         GUI specific commands should have been dealt with
-        already."""
+        already.
+        
+        If this function return True, then that means that
+        the calling function should not print line.
+        If it returns False, then the calling function
+        *should* print line to the screen (ie insert it
+        into the entrybox)."""
         if not line.startswith('/'): return
         line = line[1:].lower()
         if line == 'warning':
@@ -129,9 +135,10 @@ class ClientConnection(LineReceiver):
                 LineReceiver.sendLine(self, Messages.ping_message)
                 self.ping_start = time.clock()
                 return True
-        elif any([line == 'list', line == 'listusers']):
+        elif any((line == 'list', line == 'listusers')):
             if self.factory.state == "CONNECTED":
                 self.getUsers()
+                return True 
         return False
     
     def getUsers(self):
