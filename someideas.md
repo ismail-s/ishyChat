@@ -39,6 +39,9 @@ These are related to setting up hyperlinks for Tkinter
 * Each tuple has a fragment of text and what type of text it is (eg normal, hyperlink, @mention)
 * Then, we can run through and insert each text fragment with the corresponding tags
 
+##re
+* Use re.match to identify commands given by user
+
 ##CLI view
 * This may require using addReader/addWriter-this needs further research/testing
 
