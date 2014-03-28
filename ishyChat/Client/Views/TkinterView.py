@@ -19,7 +19,7 @@ import ishyChat.Client.Networking as Networking
 #import ishyChat.Utils.Encryptor as Encryptor
 
 # All the allowed Tkinter colours for printing coloured text
-COLOURS = json.load(open('Colours.json', 'r'))
+COLOURS = json.load(open('ishyChat//Client//Views//Colours.json', 'r'))
 
 
 

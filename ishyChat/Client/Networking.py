@@ -53,7 +53,7 @@ class ClientConnection(LineReceiver):
     non-view-dependent things (eg sending and receiving pings,
     which don't depend on what sort of GUI or CLI interface
     you're using)."""
-    def __init__(self, factory, application *args, **kwargs):
+    def __init__(self, factory, application, *args, **kwargs):
         # LineReceiver.__init__(self, *args, **kwargs)
         self.factory = factory
         self.app = application
