@@ -20,11 +20,11 @@ class TestPacker(unittest.TestCase):
     
     def test_makeDict_returns_valid_dict_when_given_no_args(self):
         res = Packer.makeDict()
-        ans = {'message': '', 'name': None, 'metadata': []}
+        ans = {'message': '', 'name': None, 'metadata': {}, 'type': 'text'}
         self.assertEqual(res, ans)
     
     def test_makeDictAndPack_creates_a_valid_dict(self):
-        res = Packer.makeDictAndPack(msg = 'test', metadata = ['test'], name = 'client')
+        res = Packer.makeDictAndPack(msg = 'test', metadata = {'test': None}, name = 'client', type = 'text')
         res = Packer.packDown(res)
         self.assertIsInstance(res, dict)
     
