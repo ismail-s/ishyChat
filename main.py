@@ -1,7 +1,11 @@
 import sys, argparse
 #from getpass import getpass
-from Tkinter import Tk
-import tkSimpleDialog as tkDialogs
+if sys.version_info >= (3, 0):
+    from tkinter import Tk
+    import tkinter.simpledialog as tkDialogs
+else:
+    from Tkinter import Tk
+    import tkSimpleDialog as tkDialogs
 from ishyChat.Client.Views.TkinterView import Application as TkinterApp
 from ishyChat.Server.Server import main as ServerApp
 

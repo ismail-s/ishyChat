@@ -3,10 +3,17 @@
 # -*- coding: utf-8 -*-
 import json
 #Tkinter related imports
-import Tkinter as tk
-import ScrolledText
-import ttk
-import tkFont
+import sys
+if sys.version_info >= (3, 0):
+    import tkinter as tk
+    import tkinter.scrolledtext as ScrolledText
+    import tkinter.ttk as ttk
+    import tkinter.font as tkFont
+else:
+    import Tkinter as tk
+    import ScrolledText
+    import ttk
+    import tkFont
 
 from twisted.internet import tksupport
 
