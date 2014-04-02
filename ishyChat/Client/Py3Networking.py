@@ -201,6 +201,17 @@ class Factory(object):
         loop.run_forever()
         loop.close()
     
+    def stop_reactor(self, *args, **kwargs):
+        self.loop.stop()
+    
+    def install_tk_support(self, root):
+        time_to_wait = 10.0/1000.0
+        
+        def callback():
+            root.update()
+            self.loop.call_later(time_to_wait, callback)
+
+        self.loop.call_later(time_to_wait, callback)
 if __name__ == "__main__":
     print("""This is no longer intended to be run directly!
 Instead, run main.py in the highest directory (2 directories up).""")
