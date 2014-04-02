@@ -67,7 +67,9 @@ class ClientConnection(asyncio.Protocol):
 
     def data_received(self, line):
         if not line: return  # If we haven't been given anything, then we don't do anything.
-        # Decode object if required
+        if isinstance(line, bytes):
+            line = line.decode()
+
         dict_obj = Pk.packDown(line)
         name, msg, metadata = dict_obj['name'], dict_obj['message'], dict_obj['metadata']
         name_tag = ''
@@ -119,7 +121,8 @@ class ClientConnection(asyncio.Protocol):
         self.write(line)
     
     def write(self, line):
-        # encode line if necessary
+        if isinstance(line, str):
+            line = line.encode()
         self.transport.write(line)
 
     def _command_parser(self, line):
