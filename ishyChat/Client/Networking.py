@@ -20,6 +20,7 @@ from twisted.internet import  reactor, ssl
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.protocols.basic import LineReceiver
 
+from twisted.internet import tksupport
 ##The last 3 imports are local files.
 #import message packer/unpacker
 import ishyChat.Utils.Packer as Pk
@@ -30,19 +31,6 @@ import ishyChat.Utils.Messages as Messages
 ################
 ###End imports##
 ################
-
-def runReactor(address, port, factory):
-    """Sets up the reactor and runs it.
-    
-    Basically, once the application has been set up,
-    this function is called to start the application."""
-    reactor.connectSSL(address, port, factory, ssl.ClientContextFactory())
-    
-    #Let's get this show on the road!
-    reactor.run()
-
-def stopReactor(*args, **kwargs):
-    reactor.stop()
 
 
 class ClientConnection(LineReceiver):
@@ -176,6 +164,22 @@ class Factory(ReconnectingClientFactory):
         self.state = "NOT CONNECTED"
         ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
+    def run_reactor(self, address, port):
+        """Sets up the reactor and runs it.
+        
+        Basically, once the application has been set up,
+        this function is called to start the application."""
+        # Need to add authentication to this
+        reactor.connectSSL(address, port, self, ssl.ClientContextFactory())
+        
+        #Let's get this show on the road!
+        reactor.run()
+    
+    def stop_reactor(self, *args, **kwargs):
+        reactor.stop()
+    
+    def install_tk_support(self, root):
+        tksupport.install(root)
 
 if __name__ == "__main__":
     print """This is no longer intended to be run directly!
