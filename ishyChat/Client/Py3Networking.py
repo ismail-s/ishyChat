@@ -190,16 +190,15 @@ class Factory(object):
         # The state is either "NOT CONNECTED" or "CONNECTED or GET NAME"
         # at different times.
         self.state = "NOT CONNECTED"
+        self.loop = asyncio.get_event_loop()
 
     def run_reactor(self, address, port):
         # Need to add ssl to this, and repeatedly try to connect as well.
-        # Also need to have tkinter support.
-        loop = asyncio.get_event_loop()
-        client = ClientConnection(self, self.app)
-        coro = loop.create_connection(lambda: client, address, port)
-        loop.run_until_complete(coro)
-        loop.run_forever()
-        loop.close()
+        self.line = ClientConnection(self, self.app)
+        coro = self.loop.create_connection(lambda: self.line, address, port)
+        self.loop.run_until_complete(coro)
+        self.loop.run_forever()
+        self.loop.close()
     
     def stop_reactor(self, *args, **kwargs):
         self.loop.stop()
