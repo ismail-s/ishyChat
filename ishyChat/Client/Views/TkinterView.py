@@ -33,9 +33,8 @@ class Application(tk.Tk):
     """This is the main application class holding the chat client.
 
     All other classes are instantiated within this one."""
-    def __init__(self):
+    def __init__(self, factory):
         tk.Tk.__init__(self)
-        self.protocol('WM_DELETE_WINDOW', Networking.stopReactor)
         self.wm_title("ishyChat")
         
         #Set up application
@@ -43,8 +42,9 @@ class Application(tk.Tk):
         self.frame.pack(fill = tk.BOTH, expand = 1)
         
         #Set up factory
-        self.factory = Networking.Factory()
+        self.factory = factory()
         self.factory.install_tk_support(self)
+        self.protocol('WM_DELETE_WINDOW', self.factory.stop_reactor)
         
         #Link the two together
         self.frame.factory = self.factory
