@@ -15,7 +15,6 @@ else:
     import ttk
     import tkFont
 
-from twisted.internet import tksupport
 
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
@@ -42,10 +41,10 @@ class Application(tk.Tk):
         #Set up application
         self.frame = Frame(self)
         self.frame.pack(fill = tk.BOTH, expand = 1)
-        tksupport.install(self)
         
         #Set up factory
         self.factory = Networking.Factory()
+        self.factory.install_tk_support(self)
         
         #Link the two together
         self.frame.factory = self.factory
