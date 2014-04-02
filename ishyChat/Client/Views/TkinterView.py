@@ -51,7 +51,7 @@ class Application(tk.Tk):
         self.factory.app = self.frame
     
     def run(self, address, port):
-        Networking.runReactor(address, port, self.factory)
+        self.factory.run_reactor(address, port, self.factory)
 
 
 class Frame(ttk.Frame):
@@ -123,7 +123,7 @@ class Frame(ttk.Frame):
         # even if the ClientConnection instance does not exist ie when
         # the chat client is not connected.
         if any((str_to_check == 'q', str_to_check == 'quit')):
-            Networking.stopReactor()
+            self.factory.stop_reactor()
         if any((str_to_check == 'help', str_to_check == 'h')):
             self.addString(Messages.gui_help_message)
             return True
