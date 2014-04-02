@@ -206,8 +206,8 @@ class Factory(object):
     def stop_reactor(self, *args, **kwargs):
         self.loop.stop()
     
-    def install_tk_support(self, root):
-        time_to_wait = 10.0/1000.0
+    def install_tk_support(self, root, ms = 10.0):
+        time_to_wait = ms/1000.0
         
         def callback():
             root.update()
