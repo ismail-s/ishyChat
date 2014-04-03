@@ -2,6 +2,9 @@
 *.pem
 *.csr
 
+# Zed IDE configuration file
+*.zedstate
+
 # Python bytecode
 *.py[cod]
 
