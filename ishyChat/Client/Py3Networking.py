@@ -114,6 +114,8 @@ class ClientConnection(asyncio.Protocol):
     def write(self, line):
         if isinstance(line, str):
             line = line.encode()
+        if not line.endswith(b'\r\n'):
+            line += b'\r\n'
         self.transport.write(line)
 
     def _command_parser(self, line):
