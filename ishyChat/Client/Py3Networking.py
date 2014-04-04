@@ -199,6 +199,18 @@ class Factory(object):
         # Need to add ssl to this, and repeatedly try to connect as well.
         self.line = ClientConnection(self, self.app)
         coro = self.loop.create_connection(lambda: self.line, host = address, port = port)
+        # The below commented out code maybe should be worked on-the
+        # idea is that, like in Netoworking.py, we can try and reconnect
+        # to the server whenever the connection fails. But, this try-
+        # except clause should be extended to the nearly all the below
+        # code in this method
+        #while 1:
+            #try:
+                #self.loop.run_until_complete(coro)
+            #except ConnectionRefusedError as e:
+                #self.app.addString(Messages.conn_failed)
+                #continue
+            #break
         self.loop.run_until_complete(coro)
         self.loop.run_forever()
         self.loop.close()
