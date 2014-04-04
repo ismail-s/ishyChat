@@ -157,7 +157,6 @@ class Frame(ttk.Frame):
             self.textbox.insert(tk.END, ''.join(('<', name, '>',)), ("bold", "client_" + name))
         self.textbox.insert(tk.END, string_to_add + '\n', "normal") # This will be the entry point for implementing bold/colour text highlighting.
         self._scrollToBottom()
-        self.textbox.bell() # Yes, this line is just here for the fun of it...
 
     def _scrollToBottom(self):
         """Scroll the textbox to the bottom"""
