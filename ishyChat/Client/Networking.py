@@ -42,12 +42,11 @@ class ClientConnection(LineReceiver):
     which don't depend on what sort of GUI or CLI interface
     you're using)."""
     def __init__(self, factory, application, *args, **kwargs):
-        # LineReceiver.__init__(self, *args, **kwargs)
         self.factory = factory
         self.app = application
         #Set up the encryption-getting rid of this
         #self.encryptor = Encryptor.Encryptor(key)
-    
+
     def connectionMade(self):
         self.lineReceived(Messages.start_message)
         self.factory.state = "CONNECTED"
@@ -80,7 +79,7 @@ class ClientConnection(LineReceiver):
         elif 'client' != name:
             name_tag = name
         self.app.addString(msg, name_tag)
-    
+
     def sendLine(self, line):
         """Sends line, but only after checking to see
         
@@ -100,7 +99,7 @@ class ClientConnection(LineReceiver):
             dict_to_send = Pk.makeDict(name=self.name, msg=line)
         line = Pk.packUp(dict_to_send)
         LineReceiver.sendLine(self, line)
-        
+
     def _command_parser(self, line):
         """Checks if there are any commands in line.
         
@@ -128,7 +127,7 @@ class ClientConnection(LineReceiver):
                 self.getUsers()
                 return True 
         return False
-    
+
     def getUsers(self):
         """Asks the server for a list of people in the chatroom"""
         LineReceiver.sendLine(self, Messages.getusers_message)
@@ -171,12 +170,12 @@ class Factory(ReconnectingClientFactory):
         this function is called to start the application."""
         # Need to add authentication to this
         reactor.connectSSL(address, port, self, ssl.ClientContextFactory())
-        
+
         #Let's get this show on the road!
         reactor.run()
-    
+
     def stop_reactor(self, *args, **kwargs):
         reactor.stop()
-    
+
     def install_tk_support(self, root):
         tksupport.install(root)
