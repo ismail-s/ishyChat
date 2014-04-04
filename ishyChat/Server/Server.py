@@ -12,6 +12,7 @@ class PubProtocol(basic.LineReceiver):
         self.clients = factory
         self.name = None
         self.state = "GETNAME"
+        self.setLineMode()
 
     def connectionMade(self):
         msg_to_send = "Welcome to ishyChat!\n{} other people present.\nWhat's your name?".format(len(self.clients))
