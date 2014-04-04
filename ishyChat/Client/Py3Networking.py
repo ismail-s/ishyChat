@@ -31,19 +31,6 @@ import ishyChat.Utils.Messages as Messages
 ###End imports##
 ################
 
-#def runReactor(address, port, factory):
-    #"""Sets up the reactor and runs it.
-    
-    #Basically, once the application has been set up,
-    #this function is called to start the application."""
-    #reactor.connectSSL(address, port, factory, ssl.ClientContextFactory())
-    
-    ##Let's get this show on the road!
-    #reactor.run()
-
-#def stopReactor(*args, **kwargs):
-    #reactor.stop()
-
 
 class ClientConnection(asyncio.Protocol):
     """This class handles sending and receiving messages
@@ -59,7 +46,7 @@ class ClientConnection(asyncio.Protocol):
         self.app = application
         #Set up the encryption-getting rid of this
         #self.encryptor = Encryptor.Encryptor(key)
-    
+
     def connection_made(self, transport):
         self.data_received(Messages.start_message)
         self.factory.state = "CONNECTED"
@@ -150,43 +137,13 @@ class ClientConnection(asyncio.Protocol):
         elif any((line == 'list', line == 'listusers')):
             if self.factory.state == "CONNECTED":
                 self.getUsers()
-                return True 
+                return True
         return False
-    
+
     def getUsers(self):
         """Asks the server for a list of people in the chatroom"""
         self.write(Messages.getusers_message)
 
-
-#class Factory(ReconnectingClientFactory):
-    #"""Sets up a connection, repeatedly trying to remake
-    
-    #the connection if the connection fails."""
-    #def __init__(self, *args, **kwargs):
-        #self.maxRetries = 10
-        ##self.key = key
-        
-        ## The state is either "NOT CONNECTED" or "CONNECTED or GET NAME"
-        ## at different times.
-        #self.state = "NOT CONNECTED"
-
-    #def startedConnecting(self, connector):
-        #self.app.addString(Messages.starting_conn)
-        #self.resetDelay()
-
-    #def buildProtocol(self, address):
-        #self.line = ClientConnection(self, self.app)
-        #return self.line
-
-    #def clientConnectionLost(self, connector, reason):
-        #self.app.addString(Messages.conn_lost)
-        #self.state = "NOT CONNECTED"
-        #ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
-
-    #def clientConnectionFailed(self, connector, reason):
-        #self.app.addString(Messages.conn_failed)
-        #self.state = "NOT CONNECTED"
-        #ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
 class Factory(object):
     def __init__(self):
@@ -214,10 +171,10 @@ class Factory(object):
         self.loop.run_until_complete(coro)
         self.loop.run_forever()
         self.loop.close()
-    
+
     def stop_reactor(self, *args, **kwargs):
         self.loop.stop()
-    
+
     def install_tk_support(self, root, ms = 10.0):
         time_to_wait = ms/1000.0
         
@@ -226,6 +183,3 @@ class Factory(object):
             self.loop.call_later(time_to_wait, callback)
 
         self.loop.call_later(time_to_wait, callback)
-if __name__ == "__main__":
-    print("""This is no longer intended to be run directly!
-Instead, run main.py in the highest directory (2 directories up).""")
