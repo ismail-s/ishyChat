@@ -27,5 +27,4 @@ if __name__ == '__main__':
     test1_corr_ans = {"message": "test", "metadata": {"test": null}, "name": "client"}
     print('Test 1 out of 1:')
     print('Output', test1)
-    print('Test', end = ' ')
-    print('passed' if json.loads(test1) == test1_corr_ans else 'failed')
+    print('Test ' + ('passed' if json.loads(test1) == test1_corr_ans else 'failed'))
