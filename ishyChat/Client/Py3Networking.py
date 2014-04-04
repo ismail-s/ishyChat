@@ -56,7 +56,11 @@ class ClientConnection(asyncio.Protocol):
         if not line: return  # If we haven't been given anything, then we don't do anything.
         if isinstance(line, bytes):
             line = line.decode()
-
+        # Note that line has '\r\n' at the end of it,
+        # but that doesn't seem to cause any problems
+        # with json decoding
+        #while not line.endswith('}'):
+            #line = line[:-1]
         dict_obj = Pk.packDown(line)
         name, msg, metadata = dict_obj['name'], dict_obj['message'], dict_obj['metadata']
         name_tag = ''
