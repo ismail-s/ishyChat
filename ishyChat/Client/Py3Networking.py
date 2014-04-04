@@ -87,9 +87,9 @@ class ClientConnection(asyncio.Protocol):
         elif 'client' != name:
             name_tag = name
         self.app.addString(msg, name_tag)
-    
+
     def sendLine(self, line):
-        return self.send_data(self, line)
+        return self.send_data(line)
 
     def send_data(self, line):
         """Sends line, but only after checking to see
