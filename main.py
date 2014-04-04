@@ -25,8 +25,11 @@ def main():
     server.set_defaults(func = runServer)
 
     args = parser.parse_args()
-    args.func(args)
-    
+    try:
+        args.func(args)
+    except AttributeError as e:
+        parser.parse_args(['-h'])
+
 def getInput(type_of_input, *args, **kwargs):
     root = Tk()
     root.withdraw()
