@@ -16,7 +16,7 @@ else:
     import tkFont
 
 
-#These are messages to display to the user
+# These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 
 # All the allowed Tkinter colours for printing coloured text
@@ -31,16 +31,16 @@ class Application(tk.Tk):
     def __init__(self, factory):
         tk.Tk.__init__(self)
         self.wm_title("ishyChat")
-        
-        #Set up application
+
+        # Set up application
         self.frame = Frame(self)
         self.frame.pack(fill = tk.BOTH, expand = 1)
-        
-        #Set up factory
+
+        # Set up factory
         self.factory = factory()
         self.factory.install_tk_support(self)
         self.protocol('WM_DELETE_WINDOW', self.factory.stop_reactor)
-        
+
         #Link the two together
         self.frame.factory = self.factory
         self.factory.app = self.frame
