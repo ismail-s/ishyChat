@@ -198,7 +198,7 @@ class Factory(object):
     def run_reactor(self, address, port):
         # Need to add ssl to this, and repeatedly try to connect as well.
         self.line = ClientConnection(self, self.app)
-        coro = self.loop.create_connection(lambda: self.line, address, port)
+        coro = self.loop.create_connection(lambda: self.line, host = address, port = port)
         self.loop.run_until_complete(coro)
         self.loop.run_forever()
         self.loop.close()
