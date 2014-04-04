@@ -275,10 +275,12 @@ class ClientDB(object):
             return
         self.db[new_name] = ''
 
-        colour, flat_name = '', new_name.lower()
-        for entry in self.colours:
-            if flat_name in entry:
-                self.db[new_name] = entry
+        flat_name = new_name.lower()
+        # First, we try to see if new_name matches any of the available
+        # colours, and if it does, then it's given that colour.
+        for e, entry in enumerate(self.colours_l):
+            if flat_name in entry and self.colours[e] not in self.db.values():
+                self.db[new_name] = self.colours[e]
                 break
         if self.db[new_name] == '':
             for entry in self.colours:
