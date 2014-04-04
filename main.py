@@ -60,7 +60,11 @@ def runClient(args):
             'What port do you want to connect on?',
             minvalue=1,
             maxvalue=65535)
-    app = TkinterApp()
+    if sys.version_info >= (3, 4):
+        from ishyChat.Client.Py3Networking import Factory
+    else:
+        from ishyChat.Client.Networking import Factory
+    app = TkinterApp(Factory)
     app.run(address, port)
 
 def runServer(args):
