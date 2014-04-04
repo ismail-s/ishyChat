@@ -1,5 +1,4 @@
 import sys, argparse
-#from getpass import getpass
 if sys.version_info >= (3, 0):
     from tkinter import Tk
     import tkinter.simpledialog as tkDialogs
@@ -14,17 +13,18 @@ prog_description = """ishyChat-A simple encrypted chat client over HTTPS."""
 def main():
     parser = argparse.ArgumentParser(description = prog_description)
     subparsers = parser.add_subparsers()
-    
+
     # Set up arguments for the client
     client = subparsers.add_parser('client', help = "Run the (basic, simple, encrypted) chat client.")
     client.add_argument("--host", help="This is the address of the server you want to connect to")
     client.add_argument("--port", help="This is the port to connect to on the server", type=int)
     client.set_defaults(func = runClient)
-    
+
     # Set up arguments for the server
     server = subparsers.add_parser('server', help = "Run the server program that the chat clients connect to")
     server.add_argument("--port", help = "This is the port that the server will listen on.", type=int)
     server.set_defaults(func = runServer)
+
     args = parser.parse_args()
     args.func(args)
     
@@ -37,7 +37,7 @@ def getInput(type_of_input, *args, **kwargs):
         func = tkDialogs.askinteger
     else: return
     res, count = '', 0
-    
+
     # Basically, in this loop, we ask the user at most twice
     # for their input before assuming that they want to close
     # the application, and then we quit the program.
@@ -51,7 +51,7 @@ def getInput(type_of_input, *args, **kwargs):
 
 def runClient(args):
     address, port = args.host, args.port
-    
+
     if not address:
         address = getInput(str, 'Address',
             'What address do you want to connect to?',)
