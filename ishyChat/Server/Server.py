@@ -57,6 +57,7 @@ class PubProtocol(basic.LineReceiver):
         # Maybe these next 2 lines should be moved into lineReceived
         if 'getusers' in Packer.packDown(line)['metadata']:
             self.sendLine(makeDictAndPack(name = 'server', metadata = {'gotusers': self.clients.keys()}))
+            return
         for name, client in self.clients.iteritems():
             client.sendLine(line)
 
