@@ -6,7 +6,6 @@ else:
     from Tkinter import Tk
     import tkSimpleDialog as tkDialogs
 from ishyChat.Client.Views.TkinterView import Application as TkinterApp
-from ishyChat.Server.Server import main as ServerApp
 
 prog_description = """ishyChat-A simple encrypted chat client over HTTPS."""
 
