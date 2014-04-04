@@ -180,7 +180,3 @@ class Factory(ReconnectingClientFactory):
     
     def install_tk_support(self, root):
         tksupport.install(root)
-
-if __name__ == "__main__":
-    print """This is no longer intended to be run directly!
-Instead, run main.py in the highest directory (2 directories up)."""
