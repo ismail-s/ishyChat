@@ -29,6 +29,8 @@ class Application(tk.Tk):
 
     All other classes are instantiated within this one."""
     def __init__(self, factory):
+        """Sets up this application and factory, linking
+        the two together."""
         tk.Tk.__init__(self)
         self.wm_title("ishyChat")
 
@@ -46,12 +48,16 @@ class Application(tk.Tk):
         self.factory.app = self.frame
 
     def run(self, address, port):
+        """Runs the program, connecting to the supplied address:port."""
         self.factory.run_reactor(address, port)
 
 
 class Frame(ttk.Frame):
-    #Our Tkinter application stuff is held in this.
+    """This is the frame inside the root Tkinter widget. This frame
+    holds the textbox and entrybox."""
     def __init__(self, root, *args, **kwargs):
+        """Initialises the frame, setting up the textbox and entrybox,
+        and linking up to the messageDB and the clientDB"""
         ttk.Frame.__init__(self, root, *args, **kwargs)
         self.root = root
 
@@ -71,10 +77,14 @@ class Frame(ttk.Frame):
         self.textbox.pack(fill=tk.BOTH, expand=1)
         self.entrybox.pack(fill=tk.X, expand=1, padx=3, pady=3)
 
-        self.entrybox.focus_set() # set focus on entrybox
+        self.entrybox.focus_set() # set cursor focus on entrybox
 
     def _textboxSetUp(self):
-        self.textbox = ScrolledText.ScrolledText(self, wrap=tk.WORD, width=50, height=20)
+        """Set up textbox with some tags for printing normal/bold text
+        and links."""
+        self.textbox = ScrolledText.ScrolledText(self, wrap=tk.WORD,
+                                                width=50, height=20)
+
         #Set up some tags for printing bold and coloured text.
         self.textbox.bold = tkFont.Font(weight=tkFont.BOLD)
         self.textbox.normal = tkFont.Font(underline = 0)
@@ -84,6 +94,7 @@ class Frame(ttk.Frame):
         self.textbox.tag_config("a", foreground = "blue", font = self.textbox.link)
 
     def _entryboxSetUp(self):
+        """Set up entrybox, andding bindings to the Enter, Up and Down keys."""
         self.entrybox = ttk.Entry(self, width=50)
         self.entrybox.bind("<Return>", self.sendStringFromEntrybox)
         self.entrybox.bind("<Up>", self._getNextOldMsg)
@@ -93,14 +104,18 @@ class Frame(ttk.Frame):
         """Gets whatever is in the entrybox and works out what to do
 
         with it. This may be sending it, or running some other function.
-        """
+        This function should be called whenever the user presses Enter in the
+        textbox, but can be called separately."""
         self.msgdb.reset() 
         string_to_send = self.entrybox.get()
         self.entrybox.delete(0, tk.END)     # Erase entrybox
+
         if any([not string_to_send, string_to_send == '',
                 string_to_send.isspace()]): # don't want to be sending nothing!
             return
-        if self._command_parser(string_to_send): # Check if there are any commands to run.
+
+        # Check if there are any commands to run.
+        if self._command_parser(string_to_send):
             return
         self._scrollToBottom()              # Scroll textbox to the bottom
         if self.factory.state != "NOT CONNECTED":
@@ -109,16 +124,18 @@ class Frame(ttk.Frame):
     def _command_parser(self, str_to_check):
         """This function is only called by sendStringFromMessageBox.
 
-        It checks for any commands in string, and executes them."""
+        It checks for any commands in str_to_check, and executes them."""
         if not str_to_check.startswith('/'):
             return False
         str_to_check = str_to_check[1:].lower()
 
-        # Quit command is here, so that the user can quit the program
-        # even if the ClientConnection instance does not exist ie when
-        # the chat client is not connected.
+        # Quit command is here, and not in Networking, so that the user can
+        # quit the program even if the ClientConnection instance does not
+        # exist ie when the chat client is not connected.
         if any((str_to_check == 'q', str_to_check == 'quit')):
             self.factory.stop_reactor()
+
+        # Help message
         if any((str_to_check == 'help', str_to_check == 'h')):
             self.addString(Messages.gui_help_message)
             return True
@@ -239,16 +256,21 @@ class ClientDB(object):
         # have a colour, then this is ''.
         self.db = {}
         self.colours = COLOURS
+        self.colours_l = [e.lower() for e in self.colours]
         self.textbox = textbox
 
     def addClients(self, *args, **kwargs):
-        "Adds a list of clients"
+        "Adds a list of clients, by repeatedly callling addClient."
         for client in args:
             self.addClient(client)
         for client in kwargs.values():
             self.addClient(client)
 
     def addClient(self, new_name):
+        """Adds new_name to the database of clients, making sure there's
+        no duplicates. Then, a tag is created for new_name ie a colour
+        is given to it. Then, whenever we get messages from new_name,
+        we can colour their name in the colour we've assigned to them."""
         if new_name in self.db:
             return
         self.db[new_name] = ''
