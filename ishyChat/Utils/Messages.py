@@ -24,15 +24,17 @@ warning_message = dictPreprocessor("""Warning: This connection hopefully will be
 gui_help_message = tuplePreprocessor("""Help
 ishyChat is a very simple minimalistic chat client. You make sure that one person has fired up the server, and then everyone else starts their clients (this thing) and gives it the address and port.
 Commands
+--------
 Commands are prefixed with a '/'.
-/q        Quit the program.
-/quit     Same as /q
-/test     This prints out a test string
-/h        This prints out this help message
-/help     Same as /h
-/warning  Prints the warning message.
-/ping     Prints the roundtime between you and the server.
-/[number] [number] must be >=1. Hard to explain what this does-just try it out.
+/q\t\tQuit the program.
+/quit\t\tSame as /q
+/h\t\tThis prints out this help message
+/help\t\tSame as /h
+/list\t\tPrints a list of all the people currently in the chatroom.
+/listusers\t\tSame as /list
+/warning\t\tPrints the warning message.
+/ping\t\tPrints the roundtime between you and the server.
+/[number]\t\t[number] must be >=1. Hard to explain what this does-just try it out.
 Also, try pressing the up and down keys whilst the cursor is in the entrybox (where you type messages).
 """)
 
