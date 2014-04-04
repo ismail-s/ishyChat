@@ -46,7 +46,7 @@ class Application(tk.Tk):
         self.factory.app = self.frame
 
     def run(self, address, port):
-        self.factory.run_reactor(address, port, self.factory)
+        self.factory.run_reactor(address, port)
 
 
 class Frame(ttk.Frame):
