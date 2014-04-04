@@ -19,11 +19,6 @@ else:
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 
-import ishyChat.Client.Networking as Networking
-
-#import the encryption/decryption stuff-seeing if I can remove this
-#import ishyChat.Utils.Encryptor as Encryptor
-
 # All the allowed Tkinter colours for printing coloured text
 COLOURS = json.load(open('ishyChat//Client//Views//Colours.json', 'r'))
 
@@ -49,7 +44,7 @@ class Application(tk.Tk):
         #Link the two together
         self.frame.factory = self.factory
         self.factory.app = self.frame
-    
+
     def run(self, address, port):
         self.factory.run_reactor(address, port, self.factory)
 
@@ -59,23 +54,23 @@ class Frame(ttk.Frame):
     def __init__(self, root, *args, **kwargs):
         ttk.Frame.__init__(self, root, *args, **kwargs)
         self.root = root
-        
+
         #Set up widgets
         self._textboxSetUp()
         self._entryboxSetUp()
-        
+
         self.msgdb = MessageDB()
-        
-        # This line must be called after _textboxSetUp() 
+
+        # This line must be called after _textboxSetUp()
         self.clientdb = ClientDB(self.textbox)
         self.addClient = self.clientdb.addClient
         self.removeClient = self.clientdb.removeClient
         self.addClients = self.clientdb.addClients
-        
+
         #Pack widgets
         self.textbox.pack(fill=tk.BOTH, expand=1)
         self.entrybox.pack(fill=tk.X, expand=1, padx=3, pady=3)
-        
+
         self.entrybox.focus_set() # set focus on entrybox
 
     def _textboxSetUp(self):
@@ -118,7 +113,7 @@ class Frame(ttk.Frame):
         if not str_to_check.startswith('/'):
             return False
         str_to_check = str_to_check[1:].lower()
-        
+
         # Quit command is here, so that the user can quit the program
         # even if the ClientConnection instance does not exist ie when
         # the chat client is not connected.
@@ -127,7 +122,7 @@ class Frame(ttk.Frame):
         if any((str_to_check == 'help', str_to_check == 'h')):
             self.addString(Messages.gui_help_message)
             return True
-            
+
         elif str_to_check.isdigit():  # see docstring of history_printer below.
             msg = self.msgdb.command_history_printer(int(str_to_check))
             if msg:
@@ -176,19 +171,19 @@ class MessageDB(object):
     def __init__(self):
         #We will store all the messages here
         self.msgs = []
-        
+
         # This is -ve when a previous message is being displayed on screen,
         # having been brought up with the up and down keys
         self.curr_hist_msg = 0
         self.temp_first_old_msg = ''
-    
+
     def append(self, string):
         if string:
             self.msgs.append(string)
-            
+
     def reset(self):
         self.curr_hist_msg = 0
-    
+
     def command_history_printer(self, index):
         """Prints out one of the last messages received in the entrybox.
 
@@ -199,7 +194,7 @@ class MessageDB(object):
             return
         msg_to_print = self.msgs[-index]
         return msg_to_print
-    
+
     def getNextOldMsg(self, event, curr_msg):
         """This takes in a string, either 'Up' or 'Down',
         
@@ -230,7 +225,7 @@ class MessageDB(object):
         # Line *, as referenced in the last comment
         elif self.curr_hist_msg == 0:
             msg_to_send = self.temp_first_old_msg
-        
+
         return msg_to_send
 
 
@@ -246,19 +241,19 @@ class ClientDB(object):
         self.db = {}
         self.colours = COLOURS
         self.textbox = textbox
-    
+
     def addClients(self, *args, **kwargs):
         "Adds a list of clients"
         for client in args:
             self.addClient(client)
         for client in kwargs.values():
             self.addClient(client)
-    
+
     def addClient(self, new_name):
         if new_name in self.db:
             return
         self.db[new_name] = ''
-        
+
         colour, flat_name = '', new_name.lower()
         for entry in self.colours:
             if flat_name in entry:
@@ -271,9 +266,9 @@ class ClientDB(object):
                     break
         self.textbox.tag_config('client_' + new_name,
                         foreground = self.db[new_name])
-    
+
     def removeClient(self, name_to_delete):
         del self.db[name_to_delete]
-    
+
     def getColour(self, name):
         return self.db[name]
