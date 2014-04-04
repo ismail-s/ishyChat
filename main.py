@@ -64,6 +64,13 @@ def runClient(args):
     app.run(address, port)
 
 def runServer(args):
+    try:
+        from ishyChat.Server.Server import main as ServerApp
+    except (ImportError, SyntaxError) as e:
+        print(e)
+        print("Something went wrong-the server should only be run at \
+the moment on python2.7, with twisted installed.")
+        sys.exit(1)
     if not args.port:
         port = getInput(int, "Port", "What port do you want to listen on?")
     else:
