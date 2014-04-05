@@ -14,11 +14,6 @@ Run this file to run ishyChat client.
 import time
 
 
-#Twisted imports. Twisted is used to connect to the server
-#and send and receive messages.
-#from twisted.internet import  reactor, ssl
-#from twisted.internet.protocol import ReconnectingClientFactory
-#from twisted.protocols.basic import LineReceiver
 import asyncio
 ##The last 3 imports are local files.
 #import message packer/unpacker
