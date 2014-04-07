@@ -72,7 +72,9 @@ class Factory(object):
     def run_reactor(self, address, port):
         # Need to add ssl to this, and repeatedly try to connect as well.
         self.line = ClientConnection(self, self.app)
-        coro = self.loop.create_connection(lambda: self.line, host = address, port = port)
+        sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        sslcontext.load_verify_locations(cafile = 'ishyChat/Server/keys/cert.pem')
+        coro = self.loop.create_connection(lambda: self.line, host = address, port = port, ssl = sslcontext)
         # The below commented out code maybe should be worked on-the
         # idea is that, like in Netoworking.py, we can try and reconnect
         # to the server whenever the connection fails. But, this try-
