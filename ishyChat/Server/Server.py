@@ -72,7 +72,7 @@ class PubFactory(protocol.Factory):
         return PubProtocol(self.clients)
 
 def main(port):
-    ssl_context_factory = ssl.DefaultOpenSSLContextFactory('ishyChat/Server/Keys/server.pem', 'ishyChat/Server/Keys/cert.pem')
+    ssl_context_factory = ssl.DefaultOpenSSLContextFactory('ishyChat/Server/keys/server.pem', 'ishyChat/Server/keys/cert.pem')
     reactor.listenSSL(port, PubFactory(), ssl_context_factory)
     reactor.run()
 
