@@ -20,7 +20,7 @@ else:
 import ishyChat.Utils.Messages as Messages
 
 # All the allowed Tkinter colours for printing coloured text
-COLOURS = json.load(open('ishyChat//Client//Views//Colours.json', 'r'))
+COLOURS = json.load(open('ishyChat//Client//Views//dark_colours.json', 'r'))
 
 
 
