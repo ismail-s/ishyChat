@@ -10,9 +10,6 @@ Run this file to run ishyChat client.
 ########################
 ###Imports##############
 ########################
-#This is for timing pings.
-import time
-
 
 #Twisted imports. Twisted is used to connect to the server
 #and send and receive messages.
@@ -21,9 +18,7 @@ from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.protocols.basic import LineReceiver
 
 from twisted.internet import tksupport
-##The last 3 imports are local files.
-#import message packer/unpacker
-import ishyChat.Utils.Packer as Pk
+##The last 2 imports are local files.
 
 #import ishyChat.Utils.Encryptor as Encryptor
 #These are messages to display to the user

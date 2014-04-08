@@ -11,13 +11,10 @@ Run this file to run ishyChat client.
 ###Imports##############
 ########################
 #This is for timing pings.
-import time
 import ssl
 
 import asyncio
-##The last 3 imports are local files.
-#import message packer/unpacker
-import ishyChat.Utils.Packer as Pk
+##The last 2 imports are local files.
 
 #import ishyChat.Utils.Encryptor as Encryptor
 #These are messages to display to the user
