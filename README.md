@@ -19,7 +19,7 @@ The plan is to have it working over SSL, but this is still being worked on.
 * Update/add docstrings
 * ~~Decide on a license.~~
 * Fix glitches and whatnot.
-* **Test on Windows and between different machines**(this has been done, but not yet over SSL).
+* ~~**Test on Windows and between different machines**(this has been done, but not yet over SSL).~~
 * ~~Add bold and colour text to make things look nicer.~~
 * ~~Add command-line options and a gui interface for choosing address and port.~~
 * Add a CLI interface using curses.
