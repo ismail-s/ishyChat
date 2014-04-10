@@ -75,15 +75,15 @@ class Frame(ttk.Frame):
 
         #Pack widgets
         self.textbox.pack(fill=tk.BOTH, expand=1)
-        self.entrybox.pack(fill=tk.X, expand=1, padx=3, pady=3)
+        self.entrybox.pack(fill=tk.X, expand=0, padx=3, pady=3)
 
         self.entrybox.focus_set() # set cursor focus on entrybox
 
     def _textboxSetUp(self):
         """Set up textbox with some tags for printing normal/bold text
         and links."""
-        self.textbox = ScrolledText.ScrolledText(self, wrap=tk.WORD,
-                                                width=50, height=20)
+        self.textbox = ScrolledText.ScrolledText(self, wrap = tk.WORD,
+                                                width = 50, height = 20)
 
         #Set up some tags for printing bold and coloured text.
         self.textbox.bold = tkFont.Font(weight=tkFont.BOLD)
