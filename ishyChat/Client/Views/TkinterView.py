@@ -37,6 +37,9 @@ class Application(tk.Tk):
         # Set up application
         self.frame = Frame(self)
         self.frame.pack(fill = tk.BOTH, expand = 1)
+        
+        # Resize the window to a decent size
+        self.geometry('400x300')
 
         # Set up factory
         self.factory = factory()
@@ -82,8 +85,17 @@ class Frame(ttk.Frame):
     def _textboxSetUp(self):
         """Set up textbox with some tags for printing normal/bold text
         and links."""
+        # Here, the height is set to 1, not because we want the
+        # window to be 1 high, but as a hack, as it means that
+        # the geometry manager is configured to make the
+        # window look nice for any size >= the size specified
+        # here. Then, above, in the Application class, we
+        # resize the window to a larger size.
+        # If that doesn't make sense, then change 'height = 1'
+        # to eg 'height = 20', and start the program and try
+        # resizing the window.
         self.textbox = ScrolledText.ScrolledText(self, wrap = tk.WORD,
-                                                width = 50, height = 20)
+                                                width = 50, height = 1)
 
         #Set up some tags for printing bold and coloured text.
         self.textbox.bold = tkFont.Font(weight=tkFont.BOLD)
