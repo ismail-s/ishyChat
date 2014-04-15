@@ -25,9 +25,8 @@ class PubFactory(protocol.Factory):
         #self.clients is passed so each client instance can send messages to the others.
         return PubProtocol(self.clients)
 
-def main(port):
-    ssl_context_factory = ssl.DefaultOpenSSLContextFactory('ishyChat/Server/keys/server.pem', 'ishyChat/Server/keys/cert.pem')
-    reactor.listenSSL(port, PubFactory(), ssl_context_factory)
-    reactor.run()
-
-
+    def run_reactor(self, port):
+        ssl_context_factory = ssl.DefaultOpenSSLContextFactory('ishyChat/Server/keys/server.pem', 'ishyChat/Server/keys/cert.pem')
+        reactor.listenSSL(port, self, ssl_context_factory)
+        print("Server up and running.")
+        reactor.run()
