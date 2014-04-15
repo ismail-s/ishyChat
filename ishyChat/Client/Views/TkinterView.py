@@ -71,10 +71,12 @@ class Frame(ttk.Frame):
         self.msgdb = MessageDB()
 
         # This line must be called after _textboxSetUp()
+        # There must be shorter/better way of doing this...
         self.clientdb = ClientDB(self.textbox)
         self.addClient = self.clientdb.addClient
         self.removeClient = self.clientdb.removeClient
         self.addClients = self.clientdb.addClients
+        self.changeClientName = self.clientdb.changeClientName
 
         #Pack widgets
         self.textbox.pack(fill=tk.BOTH, expand=1)
@@ -304,6 +306,10 @@ class ClientDB(object):
 
     def removeClient(self, name_to_delete):
         del self.db[name_to_delete]
+
+    def changeClientName(self, old_name, new_name):
+        self.removeClient(old_name)
+        self.addClient(new_name)
 
     def getColour(self, name):
         return self.db[name]
