@@ -71,17 +71,20 @@ def runClient(args):
 
 def runServer(args):
     try:
-        from ishyChat.Server.Server import main as ServerApp
+        if sys.version_info >= (3, 4):
+            from ishyChat.Server.Py3Server import PubFactory as ServerApp
+        else:
+            from ishyChat.Server.Server import PubFactory as ServerApp
     except (ImportError, SyntaxError) as e:
         print(e)
-        print("Something went wrong-the server should only be run at \
-the moment on python2.7, with twisted installed.")
+        print("Something went wrong with importing the server code.")
         sys.exit(1)
     if not args.port:
         port = getInput(int, "Port", "What port do you want to listen on?")
     else:
         port = args.port
-    ServerApp(port)
+    server = ServerApp()
+    server.run_reactor(port)
 
 if __name__ == '__main__':
     main()
