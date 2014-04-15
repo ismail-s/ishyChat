@@ -184,7 +184,7 @@ class Frame(ttk.Frame):
         self.msgdb.append(string_to_add)
         if name:
             self.addClient(name) # The clientName may/may not be known-this
-            # call just makes sure
+            # call just makes sure-should this call be moved into ClientDB class?
             self.textbox.insert(tk.END, ''.join(('<', name, '>',)), ("bold", "client_" + name))
         self.textbox.insert(tk.END, string_to_add + '\n', "normal") # This will be the entry point for implementing bold/colour text highlighting.
         self._scrollToBottom()
