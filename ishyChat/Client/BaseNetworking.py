@@ -50,7 +50,15 @@ class BaseConnection(object):
                 list_of_users = metadata['gotusers']
                 self.app.addClients(*list_of_users)
                 msg = 'Users in chatroom: ' + ' '.join(list_of_users)
-        
+            elif 'newname' in metadata:
+                new_name = metadata['newname']
+                if new_name == self.possible_new_name:
+                    self.app.changeClientName(self.name, new_name)
+                    self.name = new_name
+                    msg = 'Name has been changed to {}'.format(self.name)
+                else:
+                    return
+
         elif 'client' != name:
             name_tag = name
         self.app.addString(msg, name_tag)
@@ -104,6 +112,11 @@ class BaseConnection(object):
             if self.factory.state == "CONNECTED":
                 self.getUsers()
                 return True
+        elif any((line[0] == 'name', line[0] == 'newname')) and len(line) == 2:
+            self.possible_new_name = line[1]
+            self.write(Pk.makeDictAndPack(name = self.name,
+                            metadata = {'newname': self.possible_new_name}))
+            return True
         return False
 
     def getUsers(self):
