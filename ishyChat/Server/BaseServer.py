@@ -28,7 +28,7 @@ class BaseServer(object):
         line = "{} has left. {} other {} still here.".format(self.name, len(self.clients)-1, people)
         for name, client in self.clients.items():
             client.write(makeDictAndPack(msg = line, name = 'server', metadata = {'lostclient': None}))
-        to_print = self.name + "has left. " + str(len(self.clients)) + " clients connected."
+        to_print = ' '.join((self.name, "has left.", str(len(self.clients)), "clients connected."))
         print(to_print)
 
     def lineReceived(self, line):
@@ -53,7 +53,11 @@ class BaseServer(object):
         message = "Hiya {}!".format(name)
         self.write(makeDictAndPack(name = 'server', metadata = {'gotname': None}, msg = message))
         self.name, self.clients[name], self.state = name, self, "CHAT"
-        to_print = name + "has been added." + str(len(self.clients)) + "clients connected."
+        
+        to_print = ' '.join((name, "has been added.",
+        str(len(self.clients)),
+        "client{} connected.".format('' if len(self.clients)  == 1 else 's')))
+        
         print(to_print)
         message = "{} has joined the chat.".format(name)
         string = makeDictAndPack(name = 'server', metadata = ['newclient'], msg = message)
