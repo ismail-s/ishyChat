@@ -99,19 +99,20 @@ class BaseConnection(object):
         *should* print line to the screen (ie insert it
         into the entrybox)."""
         if not line.startswith('/'): return
-        line = line[1:].lower()
-        if line == 'warning':
+        line = line[1:].split()
+        line[0] = line[0].lower()
+        if line[0] == 'warning':
             self.data_received(Messages.warning_message)
             return True
-        elif line == 'ping':
-            if self.factory.state == "CONNECTED":
-                self.write(Messages.ping_message)
-                self.ping_start = time.clock()
-                return True
-        elif any((line == 'list', line == 'listusers')):
-            if self.factory.state == "CONNECTED":
-                self.getUsers()
-                return True
+        if self.factory.state != "CONNECTED":
+            return False
+        if line[0] == 'ping':
+            self.write(Messages.ping_message)
+            self.ping_start = time.clock()
+            return True
+        elif any((line[0] == 'list', line[0] == 'listusers')):
+            self.getUsers()
+            return True
         elif any((line[0] == 'name', line[0] == 'newname')) and len(line) == 2:
             self.possible_new_name = line[1]
             self.write(Pk.makeDictAndPack(name = self.name,
