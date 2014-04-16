@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 
 from twisted.internet import reactor, protocol, ssl
 from twisted.protocols import basic
@@ -26,7 +27,9 @@ class PubFactory(protocol.Factory):
         return PubProtocol(self.clients)
 
     def run_reactor(self, port):
-        ssl_context_factory = ssl.DefaultOpenSSLContextFactory('ishyChat/Server/keys/server.pem', 'ishyChat/Server/keys/cert.pem')
+        cert = os.path.join(os.getcwd(), 'ishyChat/Server/keys/cert.pem')
+        keyfile = os.path.join(os.getcwd(), 'ishyChat/Server/keys/server.pem')
+        ssl_context_factory = ssl.DefaultOpenSSLContextFactory(keyfile, cert)
         reactor.listenSSL(port, self, ssl_context_factory)
         print("Server up and running.")
         reactor.run()

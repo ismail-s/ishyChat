@@ -13,7 +13,7 @@ Run this file to run ishyChat client.
 #This is for timing pings.
 import ssl
 
-import asyncio
+import asyncio, os
 ##The last 2 imports are local files.
 
 #import ishyChat.Utils.Encryptor as Encryptor
@@ -70,8 +70,12 @@ class Factory(object):
         # Need to add ssl to this, and repeatedly try to connect as well.
         self.line = ClientConnection(self, self.app)
         sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-        sslcontext.load_verify_locations(cafile = 'ishyChat/Server/keys/cert.pem')
-        coro = self.loop.create_connection(lambda: self.line, host = address, port = port, ssl = sslcontext)
+        cert = os.path.join(os.getcwd(), 'ishyChat/Server/keys/cert.pem')
+        sslcontext.load_verify_locations(cafile = cert)
+        coro = self.loop.create_connection(lambda: self.line,
+                                        host = address,
+                                        port = port,
+                                        ssl = sslcontext)
         # The below commented out code maybe should be worked on-the
         # idea is that, like in Netoworking.py, we can try and reconnect
         # to the server whenever the connection fails. But, this try-
