@@ -31,6 +31,7 @@ class BaseConnection(object):
         name, msg, metadata = dict_obj['name'], dict_obj['message'], dict_obj['metadata']
         name_tag = ''
         if 'server' == name:
+            # Maybe make a separate method with this block in.
             if 'getname' in metadata:
                 self.factory.state = "GET NAME"
             elif 'gotname' in metadata:
