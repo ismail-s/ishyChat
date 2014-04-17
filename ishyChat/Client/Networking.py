@@ -18,12 +18,13 @@ from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.protocols.basic import LineReceiver
 
 from twisted.internet import tksupport
-##The last 2 imports are local files.
+##The last 3 imports are local files.
 
 #import ishyChat.Utils.Encryptor as Encryptor
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 
+import ishyChat.Utils.Constants as Const
 from ishyChat.Client.BaseNetworking import BaseConnection
 ################
 ###End imports##
@@ -51,10 +52,10 @@ class Factory(ReconnectingClientFactory):
     def __init__(self, *args, **kwargs):
         self.maxRetries = 10
         #self.key = key
-        
+
         # The state is either "NOT CONNECTED" or "CONNECTED or GET NAME"
         # at different times.
-        self.state = "NOT CONNECTED"
+        self.state = Const.STATE_NOT_CONNECTED
 
     def startedConnecting(self, connector):
         self.app.addString(Messages.starting_conn)
@@ -66,12 +67,12 @@ class Factory(ReconnectingClientFactory):
 
     def clientConnectionLost(self, connector, reason):
         self.app.addString(Messages.conn_lost)
-        self.state = "NOT CONNECTED"
+        self.state = Const.STATE_NOT_CONNECTED
         ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
         self.app.addString(Messages.conn_failed)
-        self.state = "NOT CONNECTED"
+        self.state = Const.STATE_NOT_CONNECTED
         ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
     def run_reactor(self, address, port):

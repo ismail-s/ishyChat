@@ -7,7 +7,7 @@ import ishyChat.Utils.Packer as Pk
 #import ishyChat.Utils.Encryptor as Encryptor
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
-
+import ishyChat.Utils.Constants as Const
 class BaseConnection(object):
     """This is a base class that implements functionality
     
@@ -20,7 +20,7 @@ class BaseConnection(object):
 
     def connection_made(self):
         self.data_received(Messages.start_message)
-        self.factory.state = "CONNECTED"
+        self.factory.state = Const.STATE_CONNECTED
 
     def lineReceived(self, line):
         return self.data_received(line)
@@ -33,9 +33,9 @@ class BaseConnection(object):
         if 'server' == name:
             # Maybe make a separate method with this block in.
             if 'getname' in metadata:
-                self.factory.state = "GET NAME"
+                self.factory.state = Const.STATE_GETNAME
             elif 'gotname' in metadata:
-                self.factory.state = "CONNECTED"
+                self.factory.state = Const.STATE_CONNECTED
                 self.getUsers()
                 self.app.addClient(self.name)
             elif 'pong' in metadata:
@@ -74,13 +74,13 @@ class BaseConnection(object):
         state = self.factory.state
         if any((not line,
                self._command_parser(line),
-               state == "NOT CONNECTED")): return
-        
-        if state == "GET NAME":
+               state == Const.STATE_GETNAME)): return
+
+        if state == Const.STATE_GETNAME:
             self.name = line
             #self.name_enc = self.encryptor.encrypt_ECB(self.name)
             dict_to_send = Pk.makeDict(name=self.name, metadata={'newname': None})
-        elif state == "CONNECTED":
+        elif state == Const.STATE_CONNECTED:
             #iv, message = self.encryptor.encrypt(line)
             dict_to_send = Pk.makeDict(name=self.name, msg=line)
         line = Pk.packUp(dict_to_send)
@@ -104,7 +104,7 @@ class BaseConnection(object):
         if line[0] == 'warning':
             self.data_received(Messages.warning_message)
             return True
-        if self.factory.state != "CONNECTED":
+        if self.factory.state != Const.STATE_CONNECTED:
             return False
         if line[0] == 'ping':
             self.write(Messages.ping_message)

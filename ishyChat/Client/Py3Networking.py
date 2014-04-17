@@ -14,12 +14,12 @@ Run this file to run ishyChat client.
 import ssl
 
 import asyncio, os
-##The last 2 imports are local files.
+##The last 3 imports are local files.
 
 #import ishyChat.Utils.Encryptor as Encryptor
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
-
+import ishyChat.Utils.Constants as Const
 from ishyChat.Client.BaseNetworking import BaseConnection
 ################
 ###End imports##
@@ -63,7 +63,7 @@ class Factory(object):
     def __init__(self):
         # The state is either "NOT CONNECTED" or "CONNECTED or GET NAME"
         # at different times.
-        self.state = "NOT CONNECTED"
+        self.state = Const.STATE_NOT_CONNECTED
         self.loop = asyncio.get_event_loop()
 
     def run_reactor(self, address, port):

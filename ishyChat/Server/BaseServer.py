@@ -3,12 +3,13 @@
 
 import ishyChat.Utils.Packer as Packer
 from ishyChat.Utils.Packer import makeDictAndPack
+import ishyChat.Utils.Constants as Const
 
 class BaseServer(object):
     def __init__(self, clients):
         self.clients = clients
         self.name = None
-        self.state = "GETNAME"
+        self.state = Const_STATE_GETNAME
         #self.setLineMode()
 
     def connectionMade(self):
@@ -38,9 +39,9 @@ class BaseServer(object):
         if 'ping' in (Packer.packDown(line))['metadata']:
             self.write(makeDictAndPack(name = 'server', metadata = {'pong': None}))
             return
-        if self.state == "GETNAME":
+        if self.state == Const_STATE_GETNAME:
             self.handle_GETNAME((Packer.packDown(line))['name'])
-        elif self.state == "CHAT":
+        elif self.state == Const.STATE_CHAT:
             self.handle_CHAT(line)
         else:
             pass
@@ -52,8 +53,8 @@ class BaseServer(object):
             return
         message = "Hiya {}!".format(name)
         self.write(makeDictAndPack(name = 'server', metadata = {'gotname': None}, msg = message))
-        self.name, self.clients[name], self.state = name, self, "CHAT"
-        
+        self.name, self.clients[name], self.state = name, self, Const.STATE_CHAT
+
         to_print = ' '.join((name, "has been added.",
         str(len(self.clients)),
         "client{} connected.".format('' if len(self.clients)  == 1 else 's')))

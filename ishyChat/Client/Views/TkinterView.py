@@ -19,6 +19,7 @@ else:
 # These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 
+import ishyChat.Utils.Constants as Const
 # All the allowed Tkinter colours for printing coloured text
 COLOURS = json.load(open('ishyChat//Client//Views//dark_colours.json', 'r'))
 
@@ -132,7 +133,7 @@ class Frame(ttk.Frame):
         if self._command_parser(string_to_send):
             return
         self._scrollToBottom()              # Scroll textbox to the bottom
-        if self.factory.state != "NOT CONNECTED":
+        if self.factory.state != Const.STATE_NOT_CONNECTED:
             self.factory.line.sendLine(string_to_send)
 
     def _command_parser(self, str_to_check):
