@@ -100,3 +100,12 @@ class BaseServer(object):
                 return
         for name, client in self.clients.items():
             client.write(line)
+
+    def broadcast(self, line, also_send_to_self = True):
+        if also_send_to_self:
+            for name, client in self.clients.items():
+                client.write(line)
+        else:
+            for name, client in self.clients.items():
+            if name != self.name:
+                client.write(line)
