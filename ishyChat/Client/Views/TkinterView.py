@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 import json
 #Tkinter related imports
-import sys
+import sys, os
 if sys.version_info >= (3, 0):
     import tkinter as tk
     import tkinter.scrolledtext as ScrolledText
@@ -21,7 +21,8 @@ import ishyChat.Utils.Messages as Messages
 
 import ishyChat.Utils.Constants as Const
 # All the allowed Tkinter colours for printing coloured text
-COLOURS = json.load(open('ishyChat//Client//Views//dark_colours.json', 'r'))
+COLOURS = json.load(open(os.path.join((os.getcwd(),
+        'ishyChat/Client/Views/dark_colours.json')), 'r'))
 
 
 
