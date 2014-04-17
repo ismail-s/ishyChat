@@ -33,4 +33,5 @@ if __name__ == '__main__':
 
     print('Test 1 out of 1:')
     print('Output', test1)
-    print('Test ' + ('passed' if json.loads(test1) == test1_corr_ans else 'failed'))
+    print(''.join(('Test',
+            'passed' if json.loads(test1) == test1_corr_ans else 'failed')))
