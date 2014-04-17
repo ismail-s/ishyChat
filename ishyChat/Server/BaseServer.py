@@ -67,7 +67,7 @@ class BaseServer(object):
                 client.write(string)
 
     def handle_CHAT(self,line):
-        # Maybe these next 2 lines should be moved into lineReceived
+        # Maybe these next 2 lines should be moved into data_received
         metadata = Packer.packDown(line)['metadata']
         if 'getusers' in metadata:
             self.write(makeDictAndPack(name = 'server', metadata = {'gotusers': list(self.clients.keys())}))
