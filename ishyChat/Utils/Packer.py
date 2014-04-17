@@ -23,8 +23,14 @@ def makeDictAndPack(type = 'text', msg = '', metadata = None, name = None):
     return packUp(makeDict(type, msg, metadata, name))
 
 if __name__ == '__main__':
-    test1 = makeDictAndPack(msg = 'test', metadata = {'test': None}, name = 'client')
-    test1_corr_ans = {"message": "test", "metadata": {"test": null}, "name": "client"}
+    test1 = makeDictAndPack(msg = 'test',
+                            metadata = {'test': None},
+                            name = 'client')
+
+    test1_corr_ans = {"message": "test",
+                    "metadata": {"test": null},
+                    "name": "client"}
+
     print('Test 1 out of 1:')
     print('Output', test1)
     print('Test ' + ('passed' if json.loads(test1) == test1_corr_ans else 'failed'))
