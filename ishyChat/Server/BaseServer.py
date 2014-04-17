@@ -30,8 +30,7 @@ class BaseServer(object):
         line = "{} has left. {} other {} still here.".format(self.name,
                                                             len(self.clients)-1,
                                                             people)
-        for name, client in self.clients.items():
-            client.write(makeDictAndPack(msg = line, name = 'server',
+        self.broadcast(makeDictAndPack(msg = line, name = 'server',
                                         metadata = {'lostclient': None}))
         to_print = ' '.join((self.name, "has left.", str(len(self.clients)),
                             "clients connected."))
@@ -71,10 +70,8 @@ class BaseServer(object):
         message = "{} has joined the chat.".format(name)
         string = makeDictAndPack(name = 'server', metadata = ['newclient'],
                                 msg = message)
-        for names, client in self.clients.items():
-            if names != self.name:
-                client.write(string)
-
+        self.broadcast(string, also_send_to_self = False)
+        
     def handle_CHAT(self,line):
         # Maybe these next 2 lines should be moved into data_received
         metadata = Packer.packDown(line)['metadata']
@@ -98,8 +95,7 @@ class BaseServer(object):
                                     metadata = {'newname': self.name})
                 self.write(line_to_send_back)
                 return
-        for name, client in self.clients.items():
-            client.write(line)
+        self.broadcast(line)
 
     def broadcast(self, line, also_send_to_self = True):
         if also_send_to_self:
