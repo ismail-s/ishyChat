@@ -58,6 +58,13 @@ class BaseConnection(object):
                     msg = 'Name has been changed to {}'.format(self.name)
                 else:
                     return
+            elif 'changename' in metadata:
+                old_name, new_name = metadata['changename']
+                try:
+                    self.app.changeClientName(old_name, new_name)
+                    msg = '{} has changed name to {}'.format(old_name, new_name)
+                except KeyError:
+                    return
 
         elif 'client' != name:
             name_tag = name
