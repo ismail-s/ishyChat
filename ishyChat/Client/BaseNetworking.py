@@ -74,7 +74,7 @@ class BaseConnection(object):
         state = self.factory.state
         if any((not line,
                self._command_parser(line),
-               state == Const.STATE_GETNAME)): return
+               state == Const.STATE_NOT_CONNECTED)): return
 
         if state == Const.STATE_GETNAME:
             self.name = line
