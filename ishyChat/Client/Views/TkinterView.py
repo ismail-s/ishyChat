@@ -22,7 +22,8 @@ import ishyChat.Utils.Messages as Messages
 import ishyChat.Utils.Constants as Const
 from ishyChat.Utils.Filepath import path_to
 # All the allowed Tkinter colours for printing coloured text
-COLOURS = json.load(open(path_to(r'ishyChat\Client\Views\dark_colours.json'), 'r'))
+dark_colours_path = path_to('ishyChat/Client/Views/dark_colours.json')
+COLOURS = json.load(open(dark_colours_path, 'r'))
 
 
 class Application(tk.Tk):
