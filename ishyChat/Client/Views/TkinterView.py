@@ -114,6 +114,12 @@ class Frame(ttk.Frame):
                                 font = self.textbox.link)
 
     def _entryboxSetUp(self):
+        """Set up entrybox, along with the send button, putting the
+        
+        two into a frame. Bindings are added to the
+        Enter, Up and Down keys for the entrybox, and the button is
+        also given a callback that's the same as that for the
+        Enter key."""
         self.entrybox_frame = ttk.Frame(self)
         self.entrybox = ttk.Entry(self.entrybox_frame, width=40)
         self.send_button = ttk.Button(self.entrybox_frame,
