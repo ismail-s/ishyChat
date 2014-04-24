@@ -114,7 +114,7 @@ class Frame(ttk.Frame):
                                 font = self.textbox.link)
 
     def _entryboxSetUp(self):
-        self.entrybox_frame = ttk.Frame(self) 
+        self.entrybox_frame = ttk.Frame(self)
         self.entrybox = ttk.Entry(self.entrybox_frame, width=40)
         self.send_button = ttk.Button(self.entrybox_frame,
                                 text = "Send",
