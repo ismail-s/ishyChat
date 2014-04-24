@@ -85,16 +85,19 @@ class BaseServer(object):
             new_name = metadata['newname']
             if new_name not in self.clients.keys():
                 del self.clients[self.name]
+                old_name = self.name
                 self.name, self.clients[new_name] = new_name, self
                 line_to_send_back = makeDictAndPack(name = 'server',
                                             metadata = {'newname': self.name})
-                self.write(line_to_send_back)
-                return
+                
+                self.broadcast(makeDictAndPack(name = 'server',
+                            metadata = {'changename': [old_name, self.name]}),
+                            also_send_to_self = False)
             else:
                 line_to_send_back = makeDictAndPack(name = 'server',
                                     metadata = {'newname': self.name})
-                self.write(line_to_send_back)
-                return
+            self.write(line_to_send_back)
+            return
         self.broadcast(line)
 
     def broadcast(self, line, also_send_to_self = True):
