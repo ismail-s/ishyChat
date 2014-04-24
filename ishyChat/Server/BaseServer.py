@@ -103,5 +103,5 @@ class BaseServer(object):
                 client.write(line)
         else:
             for name, client in self.clients.items():
-            if name != self.name:
-                client.write(line)
+                if name != self.name:
+                    client.write(line)
