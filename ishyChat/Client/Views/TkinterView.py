@@ -110,7 +110,8 @@ class Frame(ttk.Frame):
         self.textbox.link = font=tkFont.Font(underline = 1)
         self.textbox.tag_config("bold", font=self.textbox.bold)
         self.textbox.tag_config("normal", font=self.textbox.normal)
-        self.textbox.tag_config("a", foreground = "blue", font = self.textbox.link)
+        self.textbox.tag_config("a", foreground = "blue",
+                                font = self.textbox.link)
 
     def _entryboxSetUp(self):
         self.entrybox_frame = ttk.Frame(self) 
