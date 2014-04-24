@@ -116,7 +116,7 @@ class Frame(ttk.Frame):
         self.entrybox.bind("<Up>", self._getNextOldMsg)
         self.entrybox.bind("<Down>", self._getNextOldMsg)
 
-    def sendStringFromEntrybox(self, event):
+    def sendStringFromEntrybox(self, *args):
         """Gets whatever is in the entrybox and works out what to do
 
         with it. This may be sending it, or running some other function.
