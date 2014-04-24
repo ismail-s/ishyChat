@@ -120,34 +120,36 @@ class Frame(ttk.Frame):
         """Gets whatever is in the entrybox and works out what to do
 
         with it. This may be sending it, or running some other function.
-        This function should be called whenever the user presses Enter in the
-        textbox, but can be called separately."""
-        self.msgdb.reset() 
+        This function should be called whenever the user presses Enter
+        in the textbox, but can be called separately."""
+        self.msgdb.reset()
         string_to_send = self.entrybox.get()
         self.entrybox.delete(0, tk.END)     # Erase entrybox
 
+        # Make sure we're not sending nothing.
         if any([not string_to_send, string_to_send == '',
-                string_to_send.isspace()]): # don't want to be sending nothing!
+                string_to_send.isspace()]): 
             return
 
         # Check if there are any commands to run.
         if self._command_parser(string_to_send):
             return
-        self._scrollToBottom()              # Scroll textbox to the bottom
+        self._scrollToBottom()  # Scroll textbox to the bottom
         if self.factory.state != Const.STATE_NOT_CONNECTED:
             self.factory.line.sendLine(string_to_send)
 
     def _command_parser(self, str_to_check):
         """This function is only called by sendStringFromMessageBox.
 
-        It checks for any commands in str_to_check, and executes them."""
+        It checks for any commands in str_to_check, and executes them.
+        """
         if not str_to_check.startswith('/'):
             return False
         str_to_check = str_to_check[1:].lower()
 
-        # Quit command is here, and not in Networking, so that the user can
-        # quit the program even if the ClientConnection instance does not
-        # exist ie when the chat client is not connected.
+        # Quit command is here, and not in Networking, so that the user
+        # can quit the program even if the ClientConnection instance
+        # does not exist ie when the chat client is not connected.
         if any((str_to_check == 'q', str_to_check == 'quit')):
             self.factory.stop_reactor()
 
@@ -156,17 +158,20 @@ class Frame(ttk.Frame):
             self.addString(Messages.gui_help_message)
             return True
 
-        elif str_to_check.isdigit():  # see docstring of history_printer below.
+        # see docstring of history_printer below to understand this.
+        elif str_to_check.isdigit():
             msg = self.msgdb.command_history_printer(int(str_to_check))
             if msg:
                 self.entrybox.insert(0, msg)
             return True
+
         #insert more options here
         return False
 
     def _getNextOldMsg(self, event):
         if event.keysym in ('Up', 'Down'):
-            res = self.msgdb.getNextOldMsg(event.keysym, self.entrybox.get())
+            res = self.msgdb.getNextOldMsg(event.keysym,
+                                        self.entrybox.get())
         else: return
         if res == -1: return
         self.entrybox.delete(0, tk.END)
@@ -178,17 +183,23 @@ class Frame(ttk.Frame):
         if string_to_add is a tuple, then this is interpreted as
         (string_to_add, name), and dealt with as such."""
 
-        #  adds string to textbox, makes it look nice. If there is a name, then it adds that too.
+        # If we haven't been given anything, then we don't do anything.
         if not string_to_add:
-            return  # If we haven't been given anything, then we don't do anything.
+            return  
         if isinstance(string_to_add, tuple):
             string_to_add, name = string_to_add
         self.msgdb.append(string_to_add)
         if name:
-            self.addClient(name) # The clientName may/may not be known-this
-            # call just makes sure-should this call be moved into ClientDB class?
-            self.textbox.insert(tk.END, ''.join(('<', name, '>',)), ("bold", "client_" + name))
-        self.textbox.insert(tk.END, string_to_add + '\n', "normal") # This will be the entry point for implementing bold/colour text highlighting.
+            self.addClient(name) # The clientName may/may not be
+            # known-this call just makes sure-should this call
+            # be moved into ClientDB class?
+            self.textbox.insert(tk.END,
+                                ''.join(('<', name, '>',)),
+                                ("bold", "client_" + name))
+        
+        # This next line will be the entry point for implementing
+        # bold/colour text highlighting.
+        self.textbox.insert(tk.END, string_to_add + '\n', "normal")
         self._scrollToBottom()
 
     def _scrollToBottom(self):
@@ -204,8 +215,8 @@ class MessageDB(object):
         #We will store all the messages here
         self.msgs = []
 
-        # This is -ve when a previous message is being displayed on screen,
-        # having been brought up with the up and down keys
+        # This is -ve when a previous message is being displayed on
+        # screen, having been brought up with the up and down keys.
         self.curr_hist_msg = 0
         self.temp_first_old_msg = ''
 
@@ -284,12 +295,14 @@ class ClientDB(object):
 
     def addClient(self, new_name):
         """Adds new_name to the database of clients, making sure there's
+        
         no duplicates. Then, a tag is created for new_name ie a colour
         is given to it. Then, whenever we get messages from new_name,
-        we can colour their name in the colour we've assigned to them."""
+        we can colour their name in the colour we've assigned to them.
+        """
         if new_name in self.db:
             return
-        
+
         # A little hack to get around 'black' not being
         # a standard named tkinter/tk colour.
         if 'black' in new_name.lower():
