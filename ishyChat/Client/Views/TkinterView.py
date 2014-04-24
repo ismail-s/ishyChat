@@ -82,7 +82,10 @@ class Frame(ttk.Frame):
 
         #Pack widgets
         self.textbox.pack(fill=tk.BOTH, expand=1)
-        self.entrybox.pack(fill=tk.X, expand=0, padx=3, pady=3)
+        self.entrybox_frame.pack(fill = tk.X,
+                                expand = 0,
+                                padx=3,
+                                pady=3)
 
         self.entrybox.focus_set() # set cursor focus on entrybox
 
@@ -99,7 +102,7 @@ class Frame(ttk.Frame):
         # to eg 'height = 20', and start the program and try
         # resizing the window.
         self.textbox = ScrolledText.ScrolledText(self, wrap = tk.WORD,
-                                                width = 50, height = 1)
+                                                width = 40, height = 1)
 
         #Set up some tags for printing bold and coloured text.
         self.textbox.bold = tkFont.Font(weight=tkFont.BOLD)
@@ -110,11 +113,16 @@ class Frame(ttk.Frame):
         self.textbox.tag_config("a", foreground = "blue", font = self.textbox.link)
 
     def _entryboxSetUp(self):
-        """Set up entrybox, andding bindings to the Enter, Up and Down keys."""
-        self.entrybox = ttk.Entry(self, width=50)
+        self.entrybox_frame = ttk.Frame(self) 
+        self.entrybox = ttk.Entry(self.entrybox_frame, width=40)
+        self.send_button = ttk.Button(self.entrybox_frame,
+                                text = "Send",
+                                command = self.sendStringFromEntrybox)
         self.entrybox.bind("<Return>", self.sendStringFromEntrybox)
         self.entrybox.bind("<Up>", self._getNextOldMsg)
         self.entrybox.bind("<Down>", self._getNextOldMsg)
+        self.entrybox.pack(side = tk.LEFT, fill=tk.X, expand=1)
+        self.send_button.pack(side = tk.LEFT, fill= tk.X, expand = 0)
 
     def sendStringFromEntrybox(self, *args):
         """Gets whatever is in the entrybox and works out what to do
