@@ -20,6 +20,7 @@ import asyncio, os
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 import ishyChat.Utils.Constants as Const
+from ishyChat.Utils.Filepath import path_to
 from ishyChat.Client.BaseNetworking import BaseConnection
 ################
 ###End imports##
@@ -70,7 +71,7 @@ class Factory(object):
         # Need to add ssl to this, and repeatedly try to connect as well.
         self.line = ClientConnection(self, self.app)
         sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-        cert = os.path.join(os.getcwd(), 'ishyChat/Server/keys/cert.pem')
+        cert = path_to('ishyChat/Server/keys/cert.pem')
         sslcontext.load_verify_locations(cafile = cert)
         coro = self.loop.create_connection(lambda: self.line,
                                         host = address,

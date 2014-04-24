@@ -6,6 +6,7 @@ from twisted.internet import reactor, protocol, ssl
 from twisted.protocols import basic
 import ishyChat.Utils.Packer as Packer
 from ishyChat.Utils.Packer import makeDictAndPack
+from ishyChat.Utils.Filepath import path_to
 from ishyChat.Server.BaseServer import BaseServer
 
 class PubProtocol(BaseServer, basic.LineReceiver):
@@ -27,8 +28,8 @@ class PubFactory(protocol.Factory):
         return PubProtocol(self.clients)
 
     def run_reactor(self, port):
-        cert = os.path.join(os.getcwd(), 'ishyChat/Server/keys/cert.pem')
-        keyfile = os.path.join(os.getcwd(), 'ishyChat/Server/keys/server.pem')
+        cert = path_to('ishyChat/Server/keys/cert.pem')
+        keyfile = path_to('ishyChat/Server/keys/server.pem')
         ssl_context_factory = ssl.DefaultOpenSSLContextFactory(keyfile, cert)
         reactor.listenSSL(port, self, ssl_context_factory)
         print("Server up and running.")

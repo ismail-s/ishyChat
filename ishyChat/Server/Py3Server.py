@@ -3,6 +3,7 @@
 
 import ishyChat.Utils.Packer as Packer
 from ishyChat.Utils.Packer import makeDictAndPack
+from ishyChat.Utils.Filepath import path_to
 from ishyChat.Server.BaseServer import BaseServer
 
 import asyncio
@@ -37,11 +38,11 @@ class PubFactory(object):
         self.clients = {}
 
     def run_reactor(self, port):
-        cert = os.path.join(os.getcwd(), 'ishyChat/Server/keys/cert.pem')
-        keyfile = os.path.join(os.getcwd(), 'ishyChat/Server/keys/server.pem')
+        cert = path_to('ishyChat/Server/keys/cert.pem')
+        keyfile = path_to('ishyChat/Server/keys/server.pem')
         sslcontext = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
         sslcontext.load_cert_chain(cert, keyfile = keyfile)
-        
+
         # This code was copied from python3.4 docs, and modified a bit.
         loop = asyncio.get_event_loop()
         coro = loop.create_server(lambda : PubProtocol(self.clients),
