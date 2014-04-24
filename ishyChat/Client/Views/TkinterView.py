@@ -131,6 +131,7 @@ class Frame(ttk.Frame):
         with it. This may be sending it, or running some other function.
         This function should be called whenever the user presses Enter
         in the textbox, but can be called separately."""
+        self.entrybox.focus_set()
         self.msgdb.reset()
         string_to_send = self.entrybox.get()
         self.entrybox.delete(0, tk.END)     # Erase entrybox
