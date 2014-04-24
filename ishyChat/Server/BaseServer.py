@@ -9,7 +9,7 @@ class BaseServer(object):
     def __init__(self, clients):
         self.clients = clients
         self.name = None
-        self.state = Const_STATE_GETNAME
+        self.state = Const.STATE_GETNAME
         #self.setLineMode()
 
     def connectionMade(self):
@@ -44,7 +44,7 @@ class BaseServer(object):
             self.write(makeDictAndPack(name = 'server',
                                     metadata = {'pong': None}))
             return
-        if self.state == Const_STATE_GETNAME:
+        if self.state == Const.STATE_GETNAME:
             self.handle_GETNAME((Packer.packDown(line))['name'])
         elif self.state == Const.STATE_CHAT:
             self.handle_CHAT(line)
