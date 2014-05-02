@@ -80,8 +80,88 @@ class TestEncryptor(unittest.TestCase):
     # and lineReceived at most
 
 
-    
-    
+
+class TestBaseServer(unittest.TestCase):
+    def test_state_is_initially_getname(self):
+        serv = BaseServ.BaseServer(clients = [])
+        self.assertEqual(serv.state, Const.STATE_GETNAME)
+
+    @patch.object(BaseServ.BaseServer, 'data_received')
+    @patch.object(BaseServ.BaseServer, 'connection_lost')
+    @patch.object(BaseServ.BaseServer, 'connection_made')
+    def test_camelCase_methods_call_non_camel_case_methods(self, conn_made, conn_lost, data_recv):
+        serv = BaseServ.BaseServer(clients = [])
+
+        serv.connectionMade()
+        self.assertEqual(conn_made.call_count, 1)
+
+        serv.connectionLost('some_reason')
+        self.assertEqual(conn_lost.call_count, 1)
+
+        serv.lineReceived('some line')
+        self.assertEqual(data_recv.call_count, 1)
+
+    def test_whether_client_is_deleted_when_connection_is_lost(self):
+        clients = {'1': 'test'}
+        serv = BaseServ.BaseServer(clients = clients)
+        serv.name = '1'
+        serv.connection_lost('some reson')
+        self.assertEqual(clients, {})
+
+    @patch.object(BaseServ.BaseServer, 'broadcast')
+    def test_message_broadcast_when_client_disconnects(self, broadcast):
+        serv = BaseServ.BaseServer(clients = {'1': 'test', '2': 'test'})
+        serv.name = 't'
+        #import pdb; pdb.set_trace()
+        serv.connection_lost('some reason')
+        self.assertEqual(broadcast.call_count, 1)
+
+    def test_broadcast_can_send_messages_to_all_clients(self):
+        clients = {}
+        for num in range(10):
+            clients[str(num)] = mock.MagicMock()
+        serv = BaseServ.BaseServer(clients = clients)
+        serv.name = '1'
+        to_broadcast = 'msg to broadcast'
+        serv.broadcast(to_broadcast)
+        
+        #The remaining lines in this method are here as python 2.7
+        # doesn't have subtests, which would replace all these lines
+        # with just three easy-to-read ones...
+        res = []
+        for mocks in clients.values():
+            res.append(mocks.write.call_args[0] == (to_broadcast,))
+            res.append(mocks.write.call_count == 1)
+        self.assertTrue(all(res))
+
+    def test_broadcast_can_send_messages_to_all_clients_excluding_self(self):
+        clients = {}
+        for num in range(10):
+            clients[str(num)] = mock.MagicMock()
+        serv = BaseServ.BaseServer(clients = clients)
+        serv.name = '1'
+        to_broadcast = 'msg to broadcast'
+        serv.broadcast(to_broadcast, also_send_to_self = False)
+
+        self.assertEqual(clients['1'].write.call_count, 0)
+        del clients['1']
+
+        #The remaining lines in this method are here as python 2.7
+        # doesn't have subtests, which would replace all these lines
+        # with just three easy-to-read ones...
+        res = []
+        for mocks in clients.values():
+            res.append(mocks.write.call_args[0] == (to_broadcast,))
+            res.append(mocks.write.call_count == 1)
+        self.assertTrue(all(res))
+
+    # Still need to make fake packets, and see how they are dealt with.
+    # Also need to test corrupt packets to make sure they are handled
+    # correctly and dont mess up the program
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
