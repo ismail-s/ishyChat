@@ -7,7 +7,14 @@ else:
     import mock
     from mock import patch
 
-from ishyChat.Utils import Messages, Packer, Encryptor
+from ishyChat.Utils import Messages, Packer
+
+try:
+    from ishyChat.Utils import Encryptor
+except ImportError:
+    Encryptor = '' # This is just to allow for PyCrypto not being
+    # installed.
+
 import ishyChat.Utils.Constants as Const
 import ishyChat.Server.BaseServer as BaseServ
 
@@ -36,7 +43,9 @@ class TestPacker(unittest.TestCase):
         res = Packer.makeDictAndPack(msg = 'test', metadata = {'test': None}, name = 'client', type = 'text')
         res = Packer.packDown(res)
         self.assertIsInstance(res, dict)
-    
+
+@unittest.skipIf(Encryptor == '',
+"PyCrypto probably hasn't been installed.")
 class TestEncryptor(unittest.TestCase):
     def setUp(self):
         self.enc = Encryptor.Encryptor('some key')
