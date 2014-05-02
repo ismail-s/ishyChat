@@ -55,7 +55,7 @@ class TestEncryptor(unittest.TestCase):
         res = self.enc.encrypt(self.test_str)
         res = self.enc.decrypt(*res)
         self.assertEqual(res, self.test_str)
-    
+
     def test_encrypt_and_decrypt_work_on_empty_strings(self):
         res = self.enc.encrypt('')
         res = self.enc.decrypt(*res)
@@ -70,16 +70,6 @@ class TestEncryptor(unittest.TestCase):
         res = self.enc.encrypt_ECB('')
         res = self.enc.decrypt_ECB(res)
         self.assertEqual(res, '')
-    
-# class TestServer(unittest.TestCase):
-    # Will need to create a mock factory, with mock clients.
-    # Will need to override sys.stdout with a mock object
-    # to pick up any print statements and record them.
-    
-    # Will need to test only connectionMade, connectionLost
-    # and lineReceived at most
-
-
 
 class TestBaseServer(unittest.TestCase):
     def test_state_is_initially_getname(self):
