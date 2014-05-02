@@ -2,8 +2,10 @@ import unittest
 import sys
 if sys.version_info >= (3, 3):
     import unittest.mock as mock
+    from unittest.mock import patch
 else:
     import mock
+    from mock import patch
 
 from ishyChat.Utils import Messages, Packer, Encryptor
 
