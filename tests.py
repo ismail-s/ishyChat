@@ -8,6 +8,8 @@ else:
     from mock import patch
 
 from ishyChat.Utils import Messages, Packer, Encryptor
+import ishyChat.Utils.Constants as Const
+import ishyChat.Server.BaseServer as BaseServ
 
 class TestPacker(unittest.TestCase):
 
