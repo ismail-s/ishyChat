@@ -44,3 +44,4 @@ nosetests.xml
 .pydevproject
 
 *.md~
+tags
