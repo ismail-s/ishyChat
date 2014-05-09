@@ -5,7 +5,6 @@ if sys.version_info >= (3, 0):
 else:
     from Tkinter import Tk
     import tkSimpleDialog as tkDialogs
-from ishyChat.Client.Views.TkinterView import Application as TkinterApp
 
 prog_description = """ishyChat-A simple encrypted chat client over HTTPS."""
 
@@ -17,6 +16,10 @@ def main():
     client = subparsers.add_parser('client', help = "Run the (basic, simple, encrypted) chat client.")
     client.add_argument("--host", help="This is the address of the server you want to connect to")
     client.add_argument("--port", help="This is the port to connect to on the server", type=int)
+    view = client.add_mutually_exclusive_group(required = True)
+    
+    view.add_argument('-g', '--gui', action = 'store_true', help = 'Run the GUI version of the chat client')
+    view.add_argument('-c', '--cli', action = 'store_true', help = 'Run the command-line version of the chat client (requires Urwid)')
     client.set_defaults(func = runClient)
 
     # Set up arguments for the server
@@ -28,6 +31,7 @@ def main():
     try:
         args.func(args)
     except AttributeError as e:
+        print(e)
         parser.parse_args(['-h'])
 
 def getInput(type_of_input, *args, **kwargs):
@@ -66,7 +70,12 @@ def runClient(args):
         from ishyChat.Client.Py3Networking import Factory
     else:
         from ishyChat.Client.Networking import Factory
-    app = TkinterApp(Factory)
+    if args.gui:
+        from ishyChat.Client.Views.TkinterView import Application as App
+    elif args.cli:
+        from ishyChat.Client.Views.UrwidView import Application as App
+
+    app = App(Factory)
     app.run(address, port)
 
 def runServer(args):
