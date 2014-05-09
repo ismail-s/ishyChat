@@ -91,3 +91,7 @@ class Factory(ReconnectingClientFactory):
 
     def install_tk_support(self, root):
         tksupport.install(root)
+
+    def install_urwid_support_and_connect_ssl(self, address, port):
+        reactor.connectSSL(address, port, self, ssl.ClientContextFactory())
+        return reactor
