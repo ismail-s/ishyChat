@@ -19,6 +19,7 @@ else:
 # These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 
+import ishyChat.Client.Views.lex as lex
 import ishyChat.Utils.Constants as Const
 from ishyChat.Utils.Filepath import path_to
 # All the allowed Tkinter colours for printing coloured text
@@ -79,6 +80,7 @@ class Frame(ttk.Frame):
         self.removeClient = self.clientdb.removeClient
         self.addClients = self.clientdb.addClients
         self.changeClientName = self.clientdb.changeClientName
+        self.getColour = self.clientdb.getColour
 
         #Pack widgets
         self.textbox.pack(fill=tk.BOTH, expand=1)
@@ -215,8 +217,28 @@ class Frame(ttk.Frame):
         
         # This next line will be the entry point for implementing
         # bold/colour text highlighting.
-        self.textbox.insert(tk.END, string_to_add + '\n', "normal")
+        self._lex_string_and_add_to_textbox(string_to_add)
         self._scrollToBottom()
+
+    def _lex_string_and_add_to_textbox(self, string_to_add):
+        tokens = lex.process(string_to_add)
+        for str_type, value in tokens:
+            if str_type == Const.MENTION:
+                try:
+                    # Check if the name is in the client db
+                    self.getColour(value[1:])
+                    
+                    self.textbox.insert(tk.END, value, 'client_' + value[1:])
+                except KeyError:
+                    self.textbox.insert(tk.END, value, 'normal')
+            elif str_type == Const.HYPERLINK:
+                self.textbox.insert(tk.END, value, 'a')
+            elif str_type == Const.NORMAL:
+                self.textbox.insert(tk.END, value, 'normal')
+            else:
+                raise Exception('Unrecognised token-maybe the lexer has been '
+                                'modified and this code not been updated.')
+        self.textbox.insert(tk.END, '\n', 'normal')
 
     def _scrollToBottom(self):
         """Scroll the textbox to the bottom"""
