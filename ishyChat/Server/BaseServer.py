@@ -93,6 +93,7 @@ class BaseServer(object):
                 self.broadcast(makeDictAndPack(name = 'server',
                             metadata = {'changename': [old_name, self.name]}),
                             also_send_to_self = False)
+                print('{} has changed name to {}.'.format(old_name, self.name))
             else:
                 line_to_send_back = makeDictAndPack(name = 'server',
                                     metadata = {'newname': self.name})
