@@ -22,9 +22,9 @@ The plan is to have it working over SSL, but this is still being worked on.
 * ~~**Test on Windows and between different machines**(this has been done, but not yet over SSL).~~
 * ~~Add bold and colour text to make things look nicer.~~
 * ~~Add command-line options and a gui interface for choosing address and port.~~
-* Add a CLI interface using curses.
+* ~~Add a CLI interface using curses.~~ (used urwid instead)
 * Maybe add a GTK interface too.
-* Add hyperlink support (using the webbrowser module).
+* ~~Add hyperlink support (using the webbrowser module).~~ (not done for cli view)
 * Add media support (well, images, and maybe other stuff).
 * Add file sharing-ness (heck, I wonder if I'll even work through all the previous items on this list...).
 
