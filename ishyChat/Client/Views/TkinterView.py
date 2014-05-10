@@ -19,6 +19,7 @@ else:
 # These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 
+from ishyChat.Client.Views.hyperlink import HyperlinkManager
 import ishyChat.Client.Views.lex as lex
 import ishyChat.Utils.Constants as Const
 from ishyChat.Utils.Filepath import path_to
@@ -72,6 +73,8 @@ class Frame(ttk.Frame):
         self._entryboxSetUp()
 
         self.msgdb = MessageDB()
+        
+        self.link_manager = HyperlinkManager(self.textbox)
 
         # This line must be called after _textboxSetUp()
         # There must be shorter/better way of doing this...
@@ -109,11 +112,9 @@ class Frame(ttk.Frame):
         #Set up some tags for printing bold and coloured text.
         self.textbox.bold = tkFont.Font(weight=tkFont.BOLD)
         self.textbox.normal = tkFont.Font(underline = 0)
-        self.textbox.link = font=tkFont.Font(underline = 1)
         self.textbox.tag_config("bold", font=self.textbox.bold)
         self.textbox.tag_config("normal", font=self.textbox.normal)
-        self.textbox.tag_config("a", foreground = "blue",
-                                font = self.textbox.link)
+        
 
     def _entryboxSetUp(self):
         """Set up entrybox, along with the send button, putting the
@@ -232,7 +233,7 @@ class Frame(ttk.Frame):
                 except KeyError:
                     self.textbox.insert(tk.END, value, 'normal')
             elif str_type == Const.HYPERLINK:
-                self.textbox.insert(tk.END, value, 'a')
+                self.textbox.insert(tk.END, value, self.link_manager.add(value))
             elif str_type == Const.NORMAL:
                 self.textbox.insert(tk.END, value, 'normal')
             else:
