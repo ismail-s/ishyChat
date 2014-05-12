@@ -19,10 +19,8 @@ from ishyChat.Utils.Filepath import path_to
 # Look into making this also work with asyncio
 ###################
 
-
-
-PALETTE = [('edit', '', '', 'standout'), # What text in the edit box should look like
-('message', '', '', '')] # What messages sent/received should look like
+###################
+# Colour definitions
 
 #Make sure these are all bold or standout a bit!
 PALETTE_COLOURS_TUPLE = [('black', '', '', ''),
@@ -42,7 +40,13 @@ PALETTE_COLOURS_TUPLE = [('black', '', '', ''),
 ('yellow', '', '', ''),
 ('white', '', '', '')]
 
+PALETTE = [('edit', '', '', 'standout'), # What text in the edit box should look like
+('message', '', '', '') # What messages sent/received should look like
+] + PALETTE_COLOURS_TUPLE
+
 PALETTE_COLOURS = [e[0] for e in PALETTE_COLOURS_TUPLE]
+###################
+
 class Application(object):
     """This is the main application class holding the chat client.
 
