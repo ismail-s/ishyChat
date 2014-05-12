@@ -8,6 +8,7 @@ import ishyChat.Utils.Packer as Pk
 #These are messages to display to the user
 import ishyChat.Utils.Messages as Messages
 import ishyChat.Utils.Constants as Const
+
 class BaseConnection(object):
     """This is a base class that implements functionality
     
@@ -37,23 +38,23 @@ class BaseConnection(object):
             elif 'gotname' in metadata:
                 self.factory.state = Const.STATE_CONNECTED
                 self.getUsers()
-                self.app.addClient(self.name)
+                self.app.add_client(self.name)
             elif 'pong' in metadata:
                 msg = 'ping time: ' + str(time.clock() - self.ping_start)
             elif 'newclient' in metadata:
                 new_name = msg[:msg.find(' ')]
-                self.app.addClient(new_name)
+                self.app.add_client(new_name)
             elif 'lostclient' in metadata:
                 name_to_remove = msg[:msg.find(' ')]
-                self.app.removeClient(name_to_remove)
+                self.app.remove_client(name_to_remove)
             elif 'gotusers' in metadata:
                 list_of_users = metadata['gotusers']
-                self.app.addClients(*list_of_users)
+                self.app.add_clients(*list_of_users)
                 msg = 'Users in chatroom: ' + ' '.join(list_of_users)
             elif 'newname' in metadata:
                 new_name = metadata['newname']
                 if new_name == self.possible_new_name:
-                    self.app.changeClientName(self.name, new_name)
+                    self.app.change_client_name(self.name, new_name)
                     self.name = new_name
                     msg = 'Name has been changed to {}'.format(self.name)
                 else:
@@ -61,7 +62,7 @@ class BaseConnection(object):
             elif 'changename' in metadata:
                 old_name, new_name = metadata['changename']
                 try:
-                    self.app.changeClientName(old_name, new_name)
+                    self.app.change_client_name(old_name, new_name)
                     msg = '{} has changed name to {}'.format(old_name, new_name)
                 except KeyError:
                     return

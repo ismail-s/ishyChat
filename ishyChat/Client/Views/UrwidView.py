@@ -93,11 +93,11 @@ class InnerFrame(urwid.Frame):
         # This line must be called after _textboxSetUp()
         # There must be shorter/better way of doing this...
         self.clientdb = ClientDB()
-        self.addClient = self.clientdb.addClient
-        self.removeClient = self.clientdb.removeClient
-        self.addClients = self.clientdb.addClients
-        self.getColour = self.clientdb.getColour
-        self.changeClientName = self.clientdb.changeClientName
+        self.add_client = self.clientdb.add
+        self.remove_client = self.clientdb.remove
+        self.add_clients = self.clientdb.add_clients
+        self.get_colour = self.clientdb.get_colour
+        self.change_client_name = self.clientdb.change_name
 
         self.set_focus_on_entrybox()
 
@@ -204,13 +204,13 @@ class InnerFrame(urwid.Frame):
         self.msgdb.append(string_to_add)
         name_tag = ('', '')
         if name:
-            self.addClient(name) # The clientName may/may not be
+            self.add_client(name) # The clientName may/may not be
             # known-this call just makes sure-should this call
             # be moved into ClientDB class?
             #self.textbox.insert(tk.END,
                                 #''.join(('<', name, '>',)),
                                 #("bold", "client_" + name))
-            name_tag = (self.getColour(name), ''.join(('<', name, '>',)))
+            name_tag = (self.get_colour(name), ''.join(('<', name, '>',)))
         
         # This next line will be the entry point for implementing
         # bold/colour text highlighting.
@@ -333,14 +333,14 @@ class ClientDB(object):
         self.db = {}
         self.colours = PALETTE_COLOURS
 
-    def addClients(self, *args, **kwargs):
+    def add_clients(self, *args, **kwargs):
         "Adds a list of clients, by repeatedly callling addClient."
         for client in args:
-            self.addClient(client)
+            self.add(client)
         for client in kwargs.values():
-            self.addClient(client)
+            self.add(client)
 
-    def addClient(self, new_name):
+    def add(self, new_name):
         """
         Adds new_name to the database of clients, making sure there's
         no duplicates. Then, a tag is created for new_name ie a colour
@@ -366,12 +366,12 @@ class ClientDB(object):
         self.db[new_name] = random.choice(self.colours)
         return
 
-    def removeClient(self, name_to_delete):
+    def remove(self, name_to_delete):
         del self.db[name_to_delete]
 
-    def changeClientName(self, old_name, new_name):
-        self.removeClient(old_name)
-        self.addClient(new_name)
+    def change_name(self, old_name, new_name):
+        self.remove(old_name)
+        self.add(new_name)
 
-    def getColour(self, name):
+    def get_colour(self, name):
         return self.db[name]

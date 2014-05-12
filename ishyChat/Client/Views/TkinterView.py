@@ -79,11 +79,11 @@ class Frame(ttk.Frame):
         # This line must be called after _textboxSetUp()
         # There must be shorter/better way of doing this...
         self.clientdb = ClientDB(self.textbox)
-        self.addClient = self.clientdb.addClient
-        self.removeClient = self.clientdb.removeClient
-        self.addClients = self.clientdb.addClients
-        self.changeClientName = self.clientdb.changeClientName
-        self.getColour = self.clientdb.getColour
+        self.add_client = self.clientdb.add
+        self.remove_client = self.clientdb.remove
+        self.add_clients = self.clientdb.add_clients
+        self.get_colour = self.clientdb.get_colour
+        self.change_client_name = self.clientdb.change_name
 
         #Pack widgets
         self.textbox.pack(fill=tk.BOTH, expand=1)
@@ -209,7 +209,7 @@ class Frame(ttk.Frame):
             string_to_add, name = string_to_add
         self.msgdb.append(string_to_add)
         if name:
-            self.addClient(name) # The clientName may/may not be
+            self.add_client(name) # The clientName may/may not be
             # known-this call just makes sure-should this call
             # be moved into ClientDB class?
             self.textbox.insert(tk.END,
@@ -227,7 +227,7 @@ class Frame(ttk.Frame):
             if str_type == Const.MENTION:
                 try:
                     # Check if the name is in the client db
-                    self.getColour(value[1:])
+                    self.get_colour(value[1:])
                     
                     self.textbox.insert(tk.END, value, 'client_' + value[1:])
                 except KeyError:
@@ -325,14 +325,14 @@ class ClientDB(object):
         self.colours_l = [e.lower() for e in self.colours]
         self.textbox = textbox
 
-    def addClients(self, *args, **kwargs):
+    def add_clients(self, *args, **kwargs):
         "Adds a list of clients, by repeatedly callling addClient."
         for client in args:
-            self.addClient(client)
+            self.add(client)
         for client in kwargs.values():
-            self.addClient(client)
+            self.add(client)
 
-    def addClient(self, new_name):
+    def add(self, new_name):
         """Adds new_name to the database of clients, making sure there's
         
         no duplicates. Then, a tag is created for new_name ie a colour
@@ -371,12 +371,12 @@ class ClientDB(object):
         self.textbox.tag_config('client_' + new_name,
                         foreground = self.db[new_name])
 
-    def removeClient(self, name_to_delete):
+    def remove(self, name_to_delete):
         del self.db[name_to_delete]
 
-    def changeClientName(self, old_name, new_name):
-        self.removeClient(old_name)
-        self.addClient(new_name)
+    def change_name(self, old_name, new_name):
+        self.remove(old_name)
+        self.add(new_name)
 
-    def getColour(self, name):
+    def get_colour(self, name):
         return self.db[name]
