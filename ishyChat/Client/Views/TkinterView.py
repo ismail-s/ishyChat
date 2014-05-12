@@ -69,8 +69,8 @@ class Frame(ttk.Frame):
         self.root = root
 
         #Set up widgets
-        self._textboxSetUp()
-        self._entryboxSetUp()
+        self._textbox_set_up()
+        self._entrybox_set_up()
 
         self.msgdb = MessageDB()
         
@@ -94,7 +94,7 @@ class Frame(ttk.Frame):
 
         self.entrybox.focus_set() # set cursor focus on entrybox
 
-    def _textboxSetUp(self):
+    def _textbox_set_up(self):
         """Set up textbox with some tags for printing normal/bold text
         and links."""
         # Here, the height is set to 1, not because we want the
@@ -116,7 +116,7 @@ class Frame(ttk.Frame):
         self.textbox.tag_config("normal", font=self.textbox.normal)
         
 
-    def _entryboxSetUp(self):
+    def _entrybox_set_up(self):
         """Set up entrybox, along with the send button, putting the
         
         two into a frame. Bindings are added to the
@@ -127,14 +127,14 @@ class Frame(ttk.Frame):
         self.entrybox = ttk.Entry(self.entrybox_frame, width=40)
         self.send_button = ttk.Button(self.entrybox_frame,
                                 text = "Send",
-                                command = self.sendStringFromEntrybox)
-        self.entrybox.bind("<Return>", self.sendStringFromEntrybox)
-        self.entrybox.bind("<Up>", self._getNextOldMsg)
-        self.entrybox.bind("<Down>", self._getNextOldMsg)
+                                command = self.send_string_from_entrybox)
+        self.entrybox.bind("<Return>", self.send_string_from_entrybox)
+        self.entrybox.bind("<Up>", self._get_next_old_msg)
+        self.entrybox.bind("<Down>", self._get_next_old_msg)
         self.entrybox.pack(side = tk.LEFT, fill=tk.X, expand=1)
         self.send_button.pack(side = tk.LEFT, fill= tk.X, expand = 0)
 
-    def sendStringFromEntrybox(self, *args):
+    def send_string_from_entrybox(self, *args):
         """Gets whatever is in the entrybox and works out what to do
 
         with it. This may be sending it, or running some other function.
@@ -153,7 +153,7 @@ class Frame(ttk.Frame):
         # Check if there are any commands to run.
         if self._command_parser(string_to_send):
             return
-        self._scrollToBottom()  # Scroll textbox to the bottom
+        self._scroll_to_bottom()  # Scroll textbox to the bottom
         if self.factory.state != Const.STATE_NOT_CONNECTED:
             self.factory.line.sendLine(string_to_send)
 
@@ -174,7 +174,7 @@ class Frame(ttk.Frame):
 
         # Help message
         if any((str_to_check == 'help', str_to_check == 'h')):
-            self.addString(Messages.gui_help_message)
+            self.add_string(Messages.gui_help_message)
             return True
 
         # see docstring of history_printer below to understand this.
@@ -187,16 +187,16 @@ class Frame(ttk.Frame):
         #insert more options here
         return False
 
-    def _getNextOldMsg(self, event):
+    def _get_next_old_msg(self, event):
         if event.keysym in ('Up', 'Down'):
-            res = self.msgdb.getNextOldMsg(event.keysym,
+            res = self.msgdb.get_next_old_msg(event.keysym,
                                         self.entrybox.get())
         else: return
         if res == -1: return
         self.entrybox.delete(0, tk.END)
         self.entrybox.insert(0, res)
 
-    def addString(self, string_to_add, name = ''):
+    def add_string(self, string_to_add, name = ''):
         """Adds string_to_add to the textbox, with optional name.
         
         if string_to_add is a tuple, then this is interpreted as
@@ -219,7 +219,7 @@ class Frame(ttk.Frame):
         # This next line will be the entry point for implementing
         # bold/colour text highlighting.
         self._lex_string_and_add_to_textbox(string_to_add)
-        self._scrollToBottom()
+        self._scroll_to_bottom()
 
     def _lex_string_and_add_to_textbox(self, string_to_add):
         tokens = lex.process(string_to_add)
@@ -241,7 +241,7 @@ class Frame(ttk.Frame):
                                 'modified and this code not been updated.')
         self.textbox.insert(tk.END, '\n', 'normal')
 
-    def _scrollToBottom(self):
+    def _scroll_to_bottom(self):
         """Scroll the textbox to the bottom"""
         self.textbox.yview(tk.END)
 
@@ -277,7 +277,7 @@ class MessageDB(object):
         msg_to_print = self.msgs[-index]
         return msg_to_print
 
-    def getNextOldMsg(self, event, curr_msg):
+    def get_next_old_msg(self, event, curr_msg):
         """This takes in a string, either 'Up' or 'Down',
         
         and returns some corresponding previous message."""

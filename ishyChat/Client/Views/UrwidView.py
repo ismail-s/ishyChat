@@ -85,8 +85,8 @@ class InnerFrame(urwid.Frame):
         self.msgdb = MessageDB()
 
         #Set up widgets
-        self._textboxSetUp()
-        self._entryboxSetUp(self.msgdb)
+        self._textbox_set_up()
+        self._entrybox_set_up(self.msgdb)
 
         super(InnerFrame, self).__init__(self.textbox, footer = self.entrybox)
 
@@ -101,7 +101,7 @@ class InnerFrame(urwid.Frame):
 
         self.set_focus_on_entrybox()
 
-    def _textboxSetUp(self):
+    def _textbox_set_up(self):
         """Set up textbox with some tags for printing normal/bold text
         and links."""
         # Here, the height is set to 1, not because we want the
@@ -116,7 +116,7 @@ class InnerFrame(urwid.Frame):
         self.listwalker = urwid.SimpleListWalker([])
         self.textbox = urwid.ListBox(self.listwalker)
 
-    def _entryboxSetUp(self, msgdb):
+    def _entrybox_set_up(self, msgdb):
         # Here, msgdb is passed in even though it is under self.msgdb,
         # as this makes it obvious that this method uses msgdb, so
         # msgdb needs to be created before running this method.
@@ -130,11 +130,11 @@ class InnerFrame(urwid.Frame):
 
     def keypress(self, size, key):
         if key == 'enter':
-            self.sendStringFromEntrybox()
+            self.send_string_from_entrybox()
         else:
             super(InnerFrame, self).keypress(size, key)
 
-    def sendStringFromEntrybox(self, *args):
+    def send_string_from_entrybox(self, *args):
         """Gets whatever is in the entrybox and works out what to do
 
         with it. This may be sending it, or running some other function.
@@ -153,7 +153,7 @@ class InnerFrame(urwid.Frame):
         # Check if there are any commands to run.
         if self._command_parser(string_to_send):
             return
-        self._scrollToBottom()  # Scroll textbox to the bottom
+        self._scroll_to_bottom()  # Scroll textbox to the bottom
         if self.factory.state != Const.STATE_NOT_CONNECTED:
             self.factory.line.send_data(string_to_send)
 
@@ -175,7 +175,7 @@ class InnerFrame(urwid.Frame):
 
         # Help message
         if any((str_to_check == 'help', str_to_check == 'h')):
-            self.addString(Messages.gui_help_message)
+            self.add_string(Messages.gui_help_message)
             return True
 
         # see docstring of history_printer below to understand this.
@@ -190,7 +190,7 @@ class InnerFrame(urwid.Frame):
 
     
 
-    def addString(self, string_to_add, name = ''):
+    def add_string(self, string_to_add, name = ''):
         """Adds string_to_add to the textbox, with optional name.
         
         if string_to_add is a tuple, then this is interpreted as
@@ -216,7 +216,7 @@ class InnerFrame(urwid.Frame):
         # bold/colour text highlighting.
         final_string_thing_to_add_to_textbox = [name_tag, ('message', string_to_add)]
         self.listwalker.append(urwid.Text(final_string_thing_to_add_to_textbox))
-        self._scrollToBottom()
+        self._scroll_to_bottom()
 
         # TEMPORARY!
         try:
@@ -224,7 +224,7 @@ class InnerFrame(urwid.Frame):
         except AttributeError as e:
             pass
 
-    def _scrollToBottom(self):
+    def _scroll_to_bottom(self):
         """Scroll the textbox to the bottom"""
         self.textbox.set_focus(len(self.listwalker) - 1)
         self.set_focus_on_entrybox()
@@ -240,13 +240,13 @@ class Entrybox(urwid.Edit):
 
     def keypress(self, size, key):
         if key in ('up', 'down'):
-            self._getNextOldMsg()
+            self._get_next_old_msg()
         else:
             super(Entrybox, self).keypress(size, key)
 
-    def _getNextOldMsg(self, key):
+    def _get_next_old_msg(self, key):
         if key in ('Up', 'up' 'Down', 'down'):
-            res = self.msgdb.getNextOldMsg(event.keysym,
+            res = self.msgdb.get_next_old_msg(event.keysym,
                                         self.entrybox.get())
         else:
             return
@@ -287,7 +287,7 @@ class MessageDB(object):
         msg_to_print = self.msgs[-index]
         return msg_to_print
 
-    def getNextOldMsg(self, event, curr_msg):
+    def get_next_old_msg(self, event, curr_msg):
         """
         This takes in a string, either 'Up' or 'Down',
         and returns some corresponding previous message."""

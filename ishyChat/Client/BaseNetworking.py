@@ -37,7 +37,7 @@ class BaseConnection(object):
                 self.factory.state = Const.STATE_GETNAME
             elif 'gotname' in metadata:
                 self.factory.state = Const.STATE_CONNECTED
-                self.getUsers()
+                self.get_users()
                 self.app.add_client(self.name)
             elif 'pong' in metadata:
                 msg = 'ping time: ' + str(time.clock() - self.ping_start)
@@ -69,7 +69,7 @@ class BaseConnection(object):
 
         elif 'client' != name:
             name_tag = name
-        self.app.addString(msg, name_tag)
+        self.app.add_string(msg, name_tag)
 
     def sendLine(self, line):
         return self.send_data(line)
@@ -119,7 +119,7 @@ class BaseConnection(object):
             self.ping_start = time.clock()
             return True
         elif any((line[0] == 'list', line[0] == 'listusers')):
-            self.getUsers()
+            self.get_users()
             return True
         elif any((line[0] == 'name', line[0] == 'newname')) and len(line) == 2:
             self.possible_new_name = line[1]
@@ -128,7 +128,7 @@ class BaseConnection(object):
             return True
         return False
 
-    def getUsers(self):
+    def get_users(self):
         """Asks the server for a list of people in the chatroom"""
         self.write(Messages.getusers_message)
 
