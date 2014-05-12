@@ -20,15 +20,6 @@ from ishyChat.Utils.Filepath import path_to
 ###################
 
 
-###############################################
-# This bit will need to be moved to Networking.py
-######networking######
-##class Factory:
-##    def install_urwid_support_and_connect_ssl(self, address, port):
-##        reactor.connectSSL(address, port, ssl.ClientContextFactory())
-##        return reactor
-###############################################
-
 
 PALETTE = [('edit', '', '', 'standout'), # What text in the edit box should look like
 ('message', '', '', '')] # What messages sent/received should look like
