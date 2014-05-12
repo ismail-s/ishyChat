@@ -1,7 +1,10 @@
 #ishyChat
 **Currently, this is unstable, until futher notice.**
 A very basic chat client/server implementation written in Python and using Twisted or asyncio for the connection.
-Note that this is a very early in-development version.
+Note that this is a very early in-development version. There is no
+guarantee of it working at any time. The server currently has no
+rate-limiting or any protections of that sort-it just accepts connections
+from everyone.
 
 The plan is to have it working over SSL, but this is still being worked on.
 
