@@ -240,7 +240,7 @@ class Entrybox(urwid.Edit):
 
     def keypress(self, size, key):
         if key in ('up', 'down'):
-            self._getNextOldMsg
+            self._getNextOldMsg()
         else:
             super(Entrybox, self).keypress(size, key)
 
