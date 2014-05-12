@@ -11,8 +11,6 @@ from ishyChat.Utils.Filepath import path_to
 
 ###################
 # TODO
-# Create a factory.install_urwid_support method
-# Sort out ClientDB
 # Make addClient assign any colour if all colours are taken-port
 # this to tkinter_view
 # Make the app look nicer-work on PALETTE
@@ -352,18 +350,6 @@ class ClientDB(object):
         we can colour their name in the colour we've assigned to them.
         """
         if new_name in self.db:
-            return
-
-        # A little hack to get around 'black' not being
-        # a standard named tkinter/tk colour.
-        if 'black' in new_name.lower():
-            self.addClient('gray')
-            colour = self.db['gray']
-            self.textbox.tag_delete('client_' + 'gray')
-            self.textbox.tag_config('client_' + new_name,
-                                    foreground = colour)
-            del self.db['gray']
-            self.db[new_name] = colour
             return
 
         self.db[new_name] = ''
