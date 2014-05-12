@@ -11,8 +11,6 @@ from ishyChat.Utils.Filepath import path_to
 
 ###################
 # TODO
-# Make addClient assign any colour if all colours are taken-port
-# this to tkinter_view
 # Make the app look nicer-work on PALETTE
 # Look into making this also work with asyncio
 ###################
