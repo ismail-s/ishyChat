@@ -53,13 +53,9 @@ class Application(object):
 
         # Set up application
         self.frame = InnerFrame()
-        
-        #self.frame.pack(fill = tk.BOTH, expand = 1)
-        
+
         # Set up factory
         self.factory = factory()
-        #self.factory.install_urwid_support(self)
-        # self.protocol('WM_DELETE_WINDOW', self.factory.stop_reactor)
 
         #Link the two together
         self.frame.factory = self.factory
@@ -94,10 +90,6 @@ class InnerFrame(urwid.Frame):
 
         super(InnerFrame, self).__init__(self.textbox, footer = self.entrybox)
 
-        
-
-
-
         # This line must be called after _textboxSetUp()
         # There must be shorter/better way of doing this...
         self.clientdb = ClientDB()
@@ -106,13 +98,6 @@ class InnerFrame(urwid.Frame):
         self.addClients = self.clientdb.addClients
         self.getColour = self.clientdb.getColour
         self.changeClientName = self.clientdb.changeClientName
-
-        #Pack widgets
-        #self.textbox.pack(fill=tk.BOTH, expand=1)
-        #self.entrybox_frame.pack(fill = tk.X,
-                                #expand = 0,
-                                #padx=3,
-                                #pady=3)
 
         self.set_focus_on_entrybox()
 
@@ -130,24 +115,13 @@ class InnerFrame(urwid.Frame):
         # resizing the window.
         self.listwalker = urwid.SimpleListWalker([])
         self.textbox = urwid.ListBox(self.listwalker)
-##        self.textbox = ScrolledText.ScrolledText(self, wrap = tk.WORD,
-##                                                width = 40, height = 1)
-##
-##        #Set up some tags for printing bold and coloured text.
-##        self.textbox.bold = tkFont.Font(weight=tkFont.BOLD)
-##        self.textbox.normal = tkFont.Font(underline = 0)
-##        self.textbox.link = font=tkFont.Font(underline = 1)
-##        self.textbox.tag_config("bold", font=self.textbox.bold)
-##        self.textbox.tag_config("normal", font=self.textbox.normal)
-##        self.textbox.tag_config("a", foreground = "blue",
-##                                font = self.textbox.link)
 
     def _entryboxSetUp(self, msgdb):
-        # Here, msgdb is passed in even though it is unser self.msgdb,
-        # as this makes it obvious that this method uses msgdb, which
-        # therefore needs to be created before running this method.
-        """Set up entrybox, along with the send button, putting the
-        
+        # Here, msgdb is passed in even though it is under self.msgdb,
+        # as this makes it obvious that this method uses msgdb, so
+        # msgdb needs to be created before running this method.
+        """
+        Set up entrybox, along with the send button, putting the
         two into a frame. Bindings are added to the
         Enter, Up and Down keys for the entrybox, and the button is
         also given a callback that's the same as that for the
@@ -242,13 +216,12 @@ class InnerFrame(urwid.Frame):
         # bold/colour text highlighting.
         final_string_thing_to_add_to_textbox = [name_tag, ('message', string_to_add)]
         self.listwalker.append(urwid.Text(final_string_thing_to_add_to_textbox))
-        #self.textbox.insert(tk.END, string_to_add + '\n', "normal")
         self._scrollToBottom()
+
         # TEMPORARY!
         try:
             self.loop.draw_screen()
-        except Exception as e:
-            open('quicklogfile', 'a').write(str(e) + string_to_add)
+        except AttributeError as e:
             pass
 
     def _scrollToBottom(self):
@@ -283,8 +256,8 @@ class Entrybox(urwid.Edit):
 
 
 class MessageDB(object):
-    """This class holds all messages in the textbox on screen
-
+    """
+    This class holds all messages in the textbox on screen
     and implements terminal-esque previous text printing (I
     have trouble explaining it better-read the code)."""
     def __init__(self):
@@ -304,8 +277,8 @@ class MessageDB(object):
         self.curr_hist_msg = 0
 
     def command_history_printer(self, index):
-        """Prints out one of the last messages received in the entrybox.
-
+        """
+        Prints out one of the last messages received in the entrybox.
         e.g. if index is 1, then the last message received is printed.
         if index is 2, the second-to-last message received is printed.
         """
@@ -315,8 +288,8 @@ class MessageDB(object):
         return msg_to_print
 
     def getNextOldMsg(self, event, curr_msg):
-        """This takes in a string, either 'Up' or 'Down',
-        
+        """
+        This takes in a string, either 'Up' or 'Down',
         and returns some corresponding previous message."""
         if event in ('Down', 'down'):
             if -len(self.msgs) > self.curr_hist_msg or self.curr_hist_msg >= 0:
@@ -349,8 +322,8 @@ class MessageDB(object):
 
 
 class ClientDB(object):
-    """Holds a list of all the people currently in the
-    
+    """
+    Holds a list of all the people currently in the
     chatroom we're connnected to, and for each person,
     we have a corresponding colour"""
     def __init__(self):
@@ -368,8 +341,8 @@ class ClientDB(object):
             self.addClient(client)
 
     def addClient(self, new_name):
-        """Adds new_name to the database of clients, making sure there's
-        
+        """
+        Adds new_name to the database of clients, making sure there's
         no duplicates. Then, a tag is created for new_name ie a colour
         is given to it. Then, whenever we get messages from new_name,
         we can colour their name in the colour we've assigned to them.
