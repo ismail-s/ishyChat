@@ -239,15 +239,15 @@ class Entrybox(urwid.Edit):
         super(Entrybox, self).__init__(caption = u'Message: ')
 
     def keypress(self, size, key):
-        if key in ('up', 'down'):
-            self._get_next_old_msg()
+        if key in ('Up', 'up', 'Down', 'down'):
+            self._get_next_old_msg(key)
         else:
             super(Entrybox, self).keypress(size, key)
 
     def _get_next_old_msg(self, key):
-        if key in ('Up', 'up' 'Down', 'down'):
-            res = self.msgdb.get_next_old_msg(event.keysym,
-                                        self.entrybox.get())
+        if key in ('Up', 'up', 'Down', 'down'):
+            res = self.msgdb.get_next_old_msg(key,
+                                        self.get_edit_text())
         else:
             return
         if res == -1:
