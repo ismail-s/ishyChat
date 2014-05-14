@@ -230,7 +230,7 @@ class InnerFrame(urwid.Frame):
         self.set_focus_on_entrybox()
 
     def set_focus_on_entrybox(self):
-        self.focus_position = 'footer'
+        self.set_focus('footer')
 
 
 class Entrybox(urwid.Edit):
