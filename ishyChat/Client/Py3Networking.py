@@ -42,6 +42,12 @@ class ClientConnection(BaseConnection, asyncio.Protocol):
         BaseConnection.connection_made(self)
         self.transport = transport
 
+    def connection_lost(self, exception):
+        # Try and reconnect
+        self.factory.loop.stop()
+        self.user_wants_to_quit = False # this isn't necessary, but
+        # provides clarification
+
     def data_received(self, line):
         if isinstance(line, bytes):
             line = line.decode()
@@ -66,6 +72,7 @@ class Factory(object):
         # at different times.
         self.state = Const.STATE_NOT_CONNECTED
         self.loop = asyncio.get_event_loop()
+        self.user_wants_to_quit = False
 
     def run_reactor(self, address, port):
         # Need to add ssl to this, and repeatedly try to connect as well.
@@ -90,7 +97,10 @@ class Factory(object):
             try:
                 self.loop.run_until_complete(coro)
                 self.loop.run_forever()
-                self.loop.close()
+                if self.user_wants_to_quit:
+                    self.loop.close()
+                else:
+                    raise OSError
             except OSError:
                 coro = self.loop.create_connection(lambda: self.line,
                                 host = address,
@@ -111,6 +121,7 @@ class Factory(object):
 
     def stop_reactor(self, *args, **kwargs):
         self.loop.stop()
+        self.user_wants_to_quit = True
 
     def install_tk_support(self, root, ms = 10.0):
         time_to_wait = ms/1000.0
