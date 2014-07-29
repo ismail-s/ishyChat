@@ -30,6 +30,10 @@ def t_NORMAL(token):
 lexer = lex.lex()
 
 def process(text):
+    """
+    Takes as input a string of text, and returns a tuple of tuples of token
+    types and token values.
+    """
     lexer.input(text)
     res = []
     for token in lexer:
