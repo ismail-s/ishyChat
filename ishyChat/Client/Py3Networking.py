@@ -77,21 +77,37 @@ class Factory(object):
                                         host = address,
                                         port = port,
                                         ssl = sslcontext)
-        # The below commented out code maybe should be worked on-the
-        # idea is that, like in Netoworking.py, we can try and reconnect
-        # to the server whenever the connection fails. But, this try-
-        # except clause should be extended to the nearly all the below
-        # code in this method
-        #while 1:
-            #try:
-                #self.loop.run_until_complete(coro)
-            #except ConnectionRefusedError as e:
-                #self.app.addString(Messages.conn_failed)
-                #continue
-            #break
-        self.loop.run_until_complete(coro)
-        self.loop.run_forever()
-        self.loop.close()
+        # The below code tries to repeatedly connect to the server,
+        # waiting for longer each time it fails to connect (well,
+        # the longest it will wait for is max_backoff)
+        min_backoff = 0.5
+        current_backoff = min_backoff
+        max_backoff = 10
+        multiply_factor = 1.3
+        no_of_tries_so_far = 0
+
+        while 1:
+            try:
+                self.loop.run_until_complete(coro)
+                self.loop.run_forever()
+                self.loop.close()
+            except OSError:
+                coro = self.loop.create_connection(lambda: self.line,
+                                host = address,
+                                port = port,
+                                ssl = sslcontext)
+                self.app.add_string(Messages.conn_failed)
+
+                sleep_call = asyncio.sleep(current_backoff)
+                self.loop.run_until_complete(sleep_call)
+
+                no_of_tries_so_far += 1
+                current_backoff *= multiply_factor
+                if current_backoff > max_backoff:
+                    current_backoff = max_backoff
+                continue
+                
+            break
 
     def stop_reactor(self, *args, **kwargs):
         self.loop.stop()
